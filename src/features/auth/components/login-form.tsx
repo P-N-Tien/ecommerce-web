@@ -6,11 +6,10 @@ import { useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { NotOperatorError } from '@/features/auth/api/session-api';
 import { navigateAfterLoginPath } from '@/features/auth/utils/navigate-after-login';
 import { hasHttpStatus } from '@/lib/api/parse-api-error';
 import { loginSchema, type LoginFormValues } from '@/features/auth/schemas/login-schema';
-import { useAuth } from '@/app/providers/auth-provider';
+import { useAuth } from '@/app/providers/auth-context';
 
 export function LoginForm() {
   const { login } = useAuth();
@@ -34,15 +33,11 @@ export function LoginForm() {
 
     try {
       const session = await login(values);
-      // navigate(navigateAfterLoginPath(session, searchParams.get('redirect')), {
-      //   replace: true,
-      // });
+      navigate(navigateAfterLoginPath(session, searchParams.get('redirect')), {
+        replace: true,
+        state: { redirect: searchParams.get('redirect') },
+      });
     } catch (error) {
-      if (error instanceof NotOperatorError) {
-        setFormError('This account cannot access the admin dashboard.');
-        return;
-      }
-
       if (hasHttpStatus(error, 429)) {
         setFormError('Too many sign-in attempts. Wait about a minute and try again.');
         return;

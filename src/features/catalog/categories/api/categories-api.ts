@@ -1,6 +1,6 @@
-import { http } from '@/services/http';
+import { http } from '@/lib/api';
 import type { Category, CategoryInput } from '@/features/catalog/categories/types';
-import { USE_MOCK_API } from '@/services/http/runtime';
+import { USE_MOCK_API } from '@/lib/api/runtime';
 import { mockCreateCategory, mockDeleteCategory, mockGetCategories, mockUpdateCategory } from './mock-categories-api';
 
 type ApiResult<T> = T | { data: T };

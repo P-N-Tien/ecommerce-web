@@ -6,6 +6,7 @@ import { RouterProvider } from 'react-router';
 import { AuthProvider } from '@/app/providers/auth-provider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { hasHttpStatus } from '@/lib/api/parse-api-error';
+import { ThemeAwareToaster } from '@/components/ui/toaster';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <RouterProvider router={router} />
+        <ThemeAwareToaster />
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,

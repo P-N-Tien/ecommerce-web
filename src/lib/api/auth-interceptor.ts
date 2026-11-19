@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { API_AUTHEN_URLS, AUTH_LOGOUT_URL, AUTH_REFRESH_URL, LOGIN_REDIRECT_URL } from '@/services/http/api-base-url';
+import { API_AUTHEN_URLS, AUTH_LOGOUT_URL, AUTH_REFRESH_URL, LOGIN_REDIRECT_URL } from '@/lib/api/api-base-url';
 import { http, authClient } from './http-client';
 import type { BackendErrorPayload, RetryableRequestConfig } from './api-types';
 import { formatApiError, normalizeAxiosError } from './error-handler';

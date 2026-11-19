@@ -1,14 +1,27 @@
+import { isAxiosError } from 'axios';
 import type { AuthSession, LoginCredentials } from '@/features/auth/types';
-import { http } from '@/services/http';
+import { authClient, http } from '@/services/http';
+import { AUTH_REFRESH_URL } from '@/services/http/api-base-url';
+import { USE_MOCK_API } from '@/services/http/runtime';
+import { mockLogin, mockRefreshSession } from './mock-auth';
 
-export class NotOperatorError extends Error {
-  constructor() {
-    super('NOT_OPERATOR');
-    this.name = 'NotOperatorError';
-  }
+function unwrap<T>(payload: T | { data: T }): T {
+  return payload && typeof payload === 'object' && 'data' in payload ? payload.data : (payload as T);
 }
 
 export async function loginRequest(credentials: LoginCredentials): Promise<AuthSession> {
-  const { data } = await http.post('/api/v1/auth/login', credentials);
-  return data;
+  if (USE_MOCK_API) return mockLogin(credentials.email, credentials.password);
+  const { data } = await http.post<AuthSession | { data: AuthSession }>('/api/v1/auth/login', credentials);
+  return unwrap(data);
+}
+
+export async function refreshSessionRequest(): Promise<AuthSession | null> {
+  if (USE_MOCK_API) return mockRefreshSession();
+  try {
+    const { data } = await authClient.post<AuthSession | { data: AuthSession }>(AUTH_REFRESH_URL);
+    return unwrap(data);
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 401) return null;
+    throw error;
+  }
 }

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { AxiosInstance } from 'axios';
-import { API_BASE_URL } from '@/services/http/api-base-url';
+import { API_BASE_URL } from '@/lib/api/api-base-url';
 
 const defaultConfig = {
   baseURL: API_BASE_URL,

@@ -5,7 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { CategoryFormModal } from '@/features/catalog/categories/components/category-form';
-import CategoriesTable from '@/features/catalog/categories/components/category-table';
+import CategoriesTable from '@/features/catalog/categories/components/categories-table';
 import {
   createCategory,
   deleteCategory,
@@ -16,14 +16,9 @@ import type { Category, CategoryInput } from '@/features/catalog/categories/type
 import type { CategoryFormValues } from '@/features/catalog/categories/schemas/category-schema';
 import { getErrorMessage } from '@/lib/api/parse-api-error';
 import { PageContainer, PageHeader } from '@/widgets/page-layout/page-container';
+import { toast } from 'sonner';
 
 const CATEGORIES_QUERY_KEY = ['catalog', 'categories'] as const;
-
-type Notice = {
-  variant: 'default' | 'destructive';
-  title: string;
-  message: string;
-};
 
 export function CategoriesView() {
   const queryClient = useQueryClient();
@@ -33,7 +28,6 @@ export function CategoriesView() {
   const [formError, setFormError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<Notice | null>(null);
 
   const saveMutation = useMutation({
     mutationFn: ({ id, values }: { id?: string; values: CategoryInput }) =>
@@ -43,10 +37,8 @@ export function CategoriesView() {
       setIsFormOpen(false);
       setEditingCategory(null);
       setFormError(null);
-      setNotice({
-        variant: 'default',
-        title: variables.id ? 'Category updated' : 'Category created',
-        message: variables.id ? 'Your category changes have been saved.' : 'The new category has been added.',
+      toast.success(variables.id ? 'Category updated' : 'Category created', {
+        description: variables.id ? 'Your category changes have been saved.' : 'The new category has been added.',
       });
     },
     onError: (error) => setFormError(getErrorMessage(error, 'Could not save this category. Please try again.')),
@@ -58,7 +50,9 @@ export function CategoriesView() {
       await queryClient.invalidateQueries({ queryKey: CATEGORIES_QUERY_KEY });
       setDeleteTarget(null);
       setDeleteError(null);
-      setNotice({ variant: 'default', title: 'Category deleted', message: 'The category has been removed.' });
+      toast.success('Category deleted', {
+        description: 'The category has been removed.',
+      });
     },
     onError: (error) => setDeleteError(getErrorMessage(error, 'Could not delete this category. Please try again.')),
   });
@@ -66,14 +60,12 @@ export function CategoriesView() {
   function openCreateForm() {
     setEditingCategory(null);
     setFormError(null);
-    setNotice(null);
     setIsFormOpen(true);
   }
 
   function openEditForm(category: Category) {
     setEditingCategory(category);
     setFormError(null);
-    setNotice(null);
     setIsFormOpen(true);
   }
 
@@ -90,7 +82,6 @@ export function CategoriesView() {
   }
 
   function openDeleteDialog(category: Category) {
-    setNotice(null);
     setDeleteError(null);
     setDeleteTarget(category);
   }
@@ -117,17 +108,6 @@ export function CategoriesView() {
           </Button>
         }
       />
-
-      {notice ? (
-        <Alert
-          variant={notice.variant}
-          role={notice.variant === 'default' ? 'status' : 'alert'}
-          aria-live={notice.variant === 'default' ? 'polite' : 'assertive'}
-        >
-          <AlertTitle>{notice.title}</AlertTitle>
-          <AlertDescription>{notice.message}</AlertDescription>
-        </Alert>
-      ) : null}
 
       <CategoryFormModal
         open={isFormOpen}

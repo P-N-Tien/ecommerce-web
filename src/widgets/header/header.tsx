@@ -1,7 +1,7 @@
 import { Menu, PanelsTopLeft } from 'lucide-react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { USE_MOCK_API } from '@/services/http/runtime';
+import { USE_MOCK_API } from '@/lib/api/runtime';
 
 type HeaderProps = {
   onMenuClick: () => void;

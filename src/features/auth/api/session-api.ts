@@ -1,8 +1,8 @@
 import { isAxiosError } from 'axios';
 import type { AuthSession, LoginCredentials } from '@/features/auth/types';
-import { authClient, http } from '@/services/http';
-import { AUTH_REFRESH_URL } from '@/services/http/api-base-url';
-import { USE_MOCK_API } from '@/services/http/runtime';
+import { authClient, http } from '@/lib/api';
+import { AUTH_REFRESH_URL } from '@/lib/api/api-base-url';
+import { USE_MOCK_API } from '@/lib/api/runtime';
 import { mockLogin, mockRefreshSession } from './mock-auth';
 
 function unwrap<T>(payload: T | { data: T }): T {

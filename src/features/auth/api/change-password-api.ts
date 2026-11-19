@@ -1,6 +1,6 @@
-import { http } from '@/services/http';
-import { USE_MOCK_API } from '@/services/http/runtime';
+import { http } from '@/lib/api';
 import { mockChangePassword } from './mock-auth';
+import { USE_MOCK_API } from '@/lib/api/runtime';
 
 export type ChangePasswordInput = {
   currentPassword: string;

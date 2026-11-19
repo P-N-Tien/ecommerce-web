@@ -4,14 +4,14 @@ import { createBrowserRouter, Outlet } from 'react-router';
 import { AdminLayout } from '@/widgets/admin-layout';
 import { ProtectedRoute } from '@/app/routers/protected-route';
 import { PermissionRoute } from '@/app/routers/permission-route';
-import { DashboardPage } from '@/app/pages/dashboard-page';
-import { NotFoundPage } from '@/app/pages/not-found-page';
-import { RootErrorPage } from '@/app/pages/root-error-page';
-import { FeaturePlaceholderPage } from '@/app/pages/feature-placeholder-page';
+import { DashboardPage } from '@/pages/dashboard-page';
+import { NotFoundPage } from '@/pages/not-found-page';
+import { RootErrorPage } from '@/pages/root-error-page';
+import { FeaturePlaceholderPage } from '@/pages/feature-placeholder-page';
 
-const LoginPage = lazy(() => import('@/app/pages/login-page'));
-const ChangePasswordPage = lazy(() => import('@/app/pages/change-password-page'));
-const CategoriesPage = lazy(() => import('@/app/pages/categories-page'));
+const LoginPage = lazy(() => import('@/pages/login-page'));
+const ChangePasswordPage = lazy(() => import('@/pages/change-password-page'));
+const CategoriesPage = lazy(() => import('@/pages/catalog/categories-page'));
 
 export const router = createBrowserRouter([
   {

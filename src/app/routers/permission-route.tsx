@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ForbiddenPage } from '@/app/pages/forbidden-page';
+import { ForbiddenPage } from '@/pages/forbidden-page';
 import { useAuth } from '@/app/providers/auth-context';
 
 type PermissionRouteProps = {

@@ -6,18 +6,21 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: [
-      'dist',
-      'node_modules',
-      'coverage',
-      'playwright-report',
-      'test-results',
-      '*.d.ts',
-    ],
+    ignores: ['dist', 'node_modules', 'coverage', 'playwright-report', 'test-results', '*.d.ts'],
   },
 
   js.configs.recommended,
   ...tseslint.configs.recommended,
+
+  {
+    files: ['vite.config.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        URL: 'readonly',
+      },
+    },
+  },
 
   {
     files: ['**/*.{ts,tsx}'],
@@ -35,20 +38,14 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
 
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
 
       '@typescript-eslint/consistent-type-imports': [
         'error',
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
 
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-      ],
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
 );

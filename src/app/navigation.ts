@@ -21,7 +21,7 @@ export const navigation: NavItem[] = [
     permission: 'view_all_products',
   },
   {
-    to: '/products/categories',
+    to: '/categories',
     label: 'Categories',
     icon: Tags,
     permission: 'view_all_products',

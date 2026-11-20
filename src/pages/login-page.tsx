@@ -17,7 +17,8 @@ function LoginPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-md bg-muted/60 px-3 py-2.5 text-xs text-muted-foreground">
-            Demo login: <span className="font-medium text-foreground">admin@example.com</span> / <span className="font-medium text-foreground">Admin123!</span>
+            Demo login: <span className="font-medium text-foreground">admin@example.com</span> /{' '}
+            <span className="font-medium text-foreground">Admin123!</span>
           </div>
           <LoginForm />
         </CardContent>

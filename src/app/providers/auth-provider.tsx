@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const login = useCallback((credentials: LoginCredentials) => loginMutation.mutateAsync(credentials), [loginMutation]);
+
   const changePassword = useCallback(
     (input: ChangePasswordInput) => changePasswordMutation.mutateAsync(input),
     [changePasswordMutation],

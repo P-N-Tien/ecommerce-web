@@ -6,12 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/app/providers/auth-context';
-import { AUTH_SESSION_QUERY_KEY } from '@/app/providers/auth-session-query-key';
 import type { AuthSession } from '@/features/auth/types';
 import { changePasswordSchema, type ChangePasswordFormValues } from '@/features/auth/schemas/change-password-schema';
 import { navigateAfterLoginPath } from '@/features/auth/utils/navigate-after-login';
 import { hasHttpStatus } from '@/lib/api/parse-api-error';
 import { useQueryClient } from '@tanstack/react-query';
+import { AUTH_SESSION_QUERY_KEY } from '@/app/providers/auth-provider';
 
 type LocationState = { redirect?: string } | null;
 

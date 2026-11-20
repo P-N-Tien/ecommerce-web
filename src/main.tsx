@@ -6,7 +6,7 @@ import { RouterProvider } from 'react-router';
 import { AuthProvider } from '@/app/providers/auth-provider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { hasHttpStatus } from '@/lib/api/parse-api-error';
-import { ThemeAwareToaster } from '@/components/ui/toaster';
+import { ThemeAwareToaster } from '@/components/feedback/toaster';
 
 const queryClient = new QueryClient({
   defaultOptions: {

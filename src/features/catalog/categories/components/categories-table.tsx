@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import { FolderPlus, Pencil, Plus, Tag, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,6 +28,14 @@ export function CategoriesTable({
   onEdit,
   onDelete,
 }: CategoriesTableProps) {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const totalPages = Math.max(1, Math.ceil(categories.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedCategories = useMemo(
+    () => categories.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [categories, currentPage, pageSize],
+  );
   const columns: DataTableColumn<Category>[] = [
     {
       id: 'category',
@@ -89,11 +98,21 @@ export function CategoriesTable({
           </div>
         ) : (
           <DataTable
-            data={categories}
+            data={paginatedCategories}
             columns={columns}
             getRowId={(category) => category.id}
             scrollRegionLabel="Categories"
             tableClassName="min-w-[600px]"
+            pagination={{
+              page: currentPage,
+              pageSize,
+              total: categories.length,
+              onPageChange: setPage,
+              onPageSizeChange: (size) => {
+                setPageSize(size);
+                setPage(1);
+              },
+            }}
             emptyState={
               <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
                 <div className="rounded-full bg-muted p-3">

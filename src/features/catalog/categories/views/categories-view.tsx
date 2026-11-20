@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { CategoryFormModal } from '@/features/catalog/categories/components/category-form';
+import { CategoryFormModal } from '@/features/catalog/categories/components/category-form-modal';
 import CategoriesTable from '@/features/catalog/categories/components/categories-table';
 import {
   createCategory,
@@ -104,7 +104,7 @@ export function CategoriesView() {
         description="Manage catalog categories used to classify products. Deleting a category unassigns its products."
         action={
           <Button onClick={openCreateForm}>
-            <Plus aria-hidden="true" /> Add category
+            <Plus aria-hidden="true" /> Add
           </Button>
         }
       />

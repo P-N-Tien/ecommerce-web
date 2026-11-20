@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DataTablePagination, type DataTablePaginationProps } from './data-table-pagination';
 
 export type DataTableColumn<T> = {
   id: string;
@@ -16,6 +17,7 @@ type DataTableProps<T> = {
   scrollRegionLabel: string;
   emptyState?: ReactNode;
   tableClassName?: string;
+  pagination?: DataTablePaginationProps;
 };
 
 export function DataTable<T>({
@@ -25,39 +27,45 @@ export function DataTable<T>({
   scrollRegionLabel,
   emptyState,
   tableClassName,
+  pagination,
 }: DataTableProps<T>) {
-  if (data.length === 0 && emptyState) return <>{emptyState}</>;
-
   return (
-    <Table scrollRegionLabel={scrollRegionLabel} className={tableClassName}>
-      <TableHeader className="bg-muted/40 text-xs uppercase tracking-wide">
-        <TableRow className="hover:bg-transparent">
-          {columns.map((column) => (
-            <TableHead key={column.id} className={column.headerClassName}>
-              {column.header}
-            </TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {data.length > 0 ? (
-          data.map((row) => (
-            <TableRow key={getRowId(row)}>
+    <div>
+      {data.length === 0 && emptyState ? (
+        emptyState
+      ) : (
+        <Table scrollRegionLabel={scrollRegionLabel} className={tableClassName}>
+          <TableHeader className="bg-muted/40 text-xs uppercase tracking-wide">
+            <TableRow className="hover:bg-transparent">
               {columns.map((column) => (
-                <TableCell key={column.id} className={column.cellClassName}>
-                  {column.cell(row)}
-                </TableCell>
+                <TableHead key={column.id} className={column.headerClassName}>
+                  {column.header}
+                </TableHead>
               ))}
             </TableRow>
-          ))
-        ) : (
-          <TableRow>
-            <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-              No records found.
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+          </TableHeader>
+          <TableBody>
+            {data.length > 0 ? (
+              data.map((row) => (
+                <TableRow key={getRowId(row)}>
+                  {columns.map((column) => (
+                    <TableCell key={column.id} className={column.cellClassName}>
+                      {column.cell(row)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
+                  No records found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
+      {pagination ? <DataTablePagination {...pagination} /> : null}
+    </div>
   );
 }

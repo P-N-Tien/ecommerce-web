@@ -5,7 +5,8 @@ import { changePasswordRequest, type ChangePasswordInput } from '@/features/auth
 import { loginRequest, refreshSessionRequest } from '@/features/auth/api/session-api';
 import { hasPermission as sessionHasPermission } from '@/app/permissions';
 import { AuthContext, type AuthContextValue } from '@/app/providers/auth-context';
-import { AUTH_SESSION_QUERY_KEY } from '@/app/providers/auth-session-query-key';
+
+export const AUTH_SESSION_QUERY_KEY = ['auth', 'session'] as const;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
@@ -31,10 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
-  const login = useCallback(
-    (credentials: LoginCredentials) => loginMutation.mutateAsync(credentials),
-    [loginMutation],
-  );
+  const login = useCallback((credentials: LoginCredentials) => loginMutation.mutateAsync(credentials), [loginMutation]);
   const changePassword = useCallback(
     (input: ChangePasswordInput) => changePasswordMutation.mutateAsync(input),
     [changePasswordMutation],
@@ -50,10 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const status: AuthStatus = sessionQuery.isPending
     ? 'loading'
     : sessionQuery.isError
-      ? 'error'
-      : sessionQuery.data
-        ? 'authenticated'
-        : 'unauthenticated';
+    ? 'error'
+    : sessionQuery.data
+    ? 'authenticated'
+    : 'unauthenticated';
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -70,4 +68,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return <AuthContext value={value}>{children}</AuthContext>;
 }
-

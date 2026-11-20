@@ -7,11 +7,15 @@ import { PermissionRoute } from '@/app/routers/permission-route';
 import { DashboardPage } from '@/pages/dashboard-page';
 import { NotFoundPage } from '@/pages/not-found-page';
 import { RootErrorPage } from '@/pages/root-error-page';
-import { FeaturePlaceholderPage } from '@/pages/feature-placeholder-page';
 
 const LoginPage = lazy(() => import('@/pages/login-page'));
 const ChangePasswordPage = lazy(() => import('@/pages/change-password-page'));
 const CategoriesPage = lazy(() => import('@/pages/catalog/categories-page'));
+const ProductsPage = lazy(() => import('@/pages/catalog/products-page'));
+const InventoryPage = lazy(() => import('@/pages/inventory-page'));
+const OrdersPage = lazy(() => import('@/pages/orders-page'));
+const UsersPage = lazy(() => import('@/pages/users-page'));
+const RolesPage = lazy(() => import('@/pages/access/roles-page'));
 
 export const router = createBrowserRouter([
   {
@@ -46,6 +50,7 @@ export const router = createBrowserRouter([
                 <Outlet />
               </PermissionRoute>
             ),
+            children: [{ index: true, handle: { title: 'Products' }, element: <ProductsPage /> }],
           },
           {
             path: 'categories',
@@ -59,7 +64,7 @@ export const router = createBrowserRouter([
             path: 'inventory',
             element: (
               <PermissionRoute permission="view_all_inventory">
-                <FeaturePlaceholderPage title="Inventory" />
+                <InventoryPage />
               </PermissionRoute>
             ),
           },
@@ -67,7 +72,7 @@ export const router = createBrowserRouter([
             path: 'orders',
             element: (
               <PermissionRoute permission="view_all_orders">
-                <FeaturePlaceholderPage title="Orders" />
+                <OrdersPage />
               </PermissionRoute>
             ),
           },
@@ -75,7 +80,7 @@ export const router = createBrowserRouter([
             path: 'users',
             element: (
               <PermissionRoute permission="view_all_users">
-                <FeaturePlaceholderPage title="Users" />
+                <UsersPage />
               </PermissionRoute>
             ),
           },
@@ -83,7 +88,7 @@ export const router = createBrowserRouter([
             path: 'settings/roles',
             element: (
               <PermissionRoute permission="manage_roles">
-                <FeaturePlaceholderPage title="Roles & permissions" />
+                <RolesPage />
               </PermissionRoute>
             ),
           },

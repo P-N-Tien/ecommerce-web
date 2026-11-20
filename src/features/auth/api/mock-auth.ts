@@ -10,7 +10,7 @@ const demoSession: AuthSession = {
   userId: 'demo-admin',
   email: DEMO_EMAIL,
   role: 'Administrator',
-  permissions: ['view_all_orders', 'view_all_products', 'view_all_inventory', 'view_all_users', 'manage_roles'],
+  permissions: ['view_all_orders', 'manage_orders', 'view_all_products', 'manage_products', 'view_all_inventory', 'manage_inventory', 'view_all_users', 'manage_users', 'manage_roles'],
   mustChangePassword: false,
 };
 

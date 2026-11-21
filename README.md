@@ -21,9 +21,13 @@ the header opens the password flow for the signed-in demo account.
 
 ## Connect to the API
 
-Copy `.env.example` to `.env`, set `VITE_API_BASE_URL`, then set
-`VITE_USE_MOCK_API=false`. The frontend expects the auth and category endpoints
-used in `src/features/*/api`.
+Copy `.env.example` to `.env`, set `VITE_API_BASE_URL` to the API origin (for the
+local backend this is `http://localhost:3000`), then set
+`VITE_USE_MOCK_API=false`. To send a fixed bearer token during local development,
+set `VITE_ACCESS_TOKEN`; authenticated sessions take precedence over this fallback.
+Values prefixed with `VITE_` are embedded in the browser bundle, so do not put a
+production secret in this variable. API paths are centralized in
+`src/lib/api/endpoints.ts` and use the backend's `/v1` route prefix.
 
 ## Source structure
 

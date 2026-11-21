@@ -1,19 +1,19 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { categorySchema, type CategoryFormValues } from '@/features/catalog/categories/schemas/category-schema';
 import type { Category } from '@/features/catalog/categories/types';
+import type { ApiErrorDetail } from '@/lib/api/api-types';
 
 type CategoryFormModalProps = {
   open: boolean;
   category: Category | null;
   isSaving: boolean;
-  errorMessage: string | null;
+  errorFields: ApiErrorDetail[] | null;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: CategoryFormValues) => Promise<void>;
 };
@@ -22,20 +22,32 @@ export function CategoryFormModal({
   open,
   category,
   isSaving,
-  errorMessage,
+  errorFields,
   onOpenChange,
   onSubmit,
 }: CategoryFormModalProps) {
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
-    defaultValues: { name: '', description: '' },
+    defaultValues: { name: '', description: '', slug: '' },
   });
 
   useEffect(() => {
     if (open) {
-      form.reset({ name: category?.name ?? '', description: category?.description ?? '' });
+      form.reset({
+        name: category?.name ?? '',
+        slug: category?.slug ?? '',
+        description: category?.description ?? '',
+      });
     }
   }, [category, form, open]);
+
+  useEffect(() => {
+    if (errorFields) {
+      for (const error of errorFields) {
+        form.setError(error.field as 'name' | 'slug' | 'description', { message: error.message });
+      }
+    }
+  }, [errorFields, form]);
 
   return (
     <Dialog
@@ -57,13 +69,20 @@ export function CategoryFormModal({
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    autoFocus
-                    maxLength={100}
-                    placeholder="For example, Accessories"
-                    disabled={isSaving}
-                  />
+                  <Input {...field} maxLength={100} placeholder="For example, Iphone 14 Pro max" disabled={isSaving} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="slug"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Slug</FormLabel>
+                <FormControl>
+                  <Input {...field} maxLength={100} placeholder="/iphone-14-pro-max" disabled={isSaving} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -91,12 +110,7 @@ export function CategoryFormModal({
               </FormItem>
             )}
           />
-          {errorMessage ? (
-            <Alert variant="destructive" aria-live="assertive">
-              <AlertTitle>Could not save category</AlertTitle>
-              <AlertDescription>{errorMessage}</AlertDescription>
-            </Alert>
-          ) : null}
+
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
               Cancel

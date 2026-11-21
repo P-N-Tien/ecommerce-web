@@ -13,6 +13,7 @@ import type { Product } from '@/features/catalog/products/types';
 import { getErrorMessage } from '@/lib/api/parse-api-error';
 import { PageContainer, PageHeader } from '@/widgets/page-layout/page-container';
 import { toast } from 'sonner';
+import { useAuth } from '@/app/providers/auth-context';
 
 const PRODUCTS_KEY = ['catalog', 'products'] as const;
 const CATEGORIES_KEY = ['catalog', 'categories'] as const;
@@ -22,14 +23,15 @@ type ProductModalState = { mode: 'create' | 'edit' | 'delete'; product: Product 
 
 export function ProductsView() {
   const queryClient = useQueryClient();
-  const canManage = true;
+  const { hasPermission } = useAuth();
+  const canManage = hasPermission('manage_products');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const productsQuery = useQuery({
     queryKey: [...PRODUCTS_KEY, page, pageSize],
     queryFn: () => getProducts(page, pageSize),
   });
-  const categoriesQuery = useQuery({ queryKey: CATEGORIES_KEY, queryFn: getCategories });
+  const categoriesQuery = useQuery({ queryKey: CATEGORIES_KEY, queryFn: () => getCategories(1, 100) });
   const [modal, setModal] = useState<ProductModalState | null>(null);
 
   const activeMutation = useMutation({
@@ -41,7 +43,7 @@ export function ProductsView() {
     onError: (error) => toast.error(getErrorMessage(error, 'Could not change product status.')),
   });
 
-  const categories = categoriesQuery.data ?? NO_CATEGORIES;
+  const categories = categoriesQuery.data?.items ?? NO_CATEGORIES;
 
   return (
     <PageContainer>

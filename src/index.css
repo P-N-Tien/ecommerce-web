@@ -50,7 +50,6 @@
   --negative: hsl(0 72.2% 40%);
 }
 
-/* Giao diện Tối (Dark Mode) kích hoạt khi thẻ html/body có class="dark" */
 .dark {
   --background: hsl(0 0% 3.9%);
   --foreground: hsl(0 0% 98%);
@@ -85,4 +84,13 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--background) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground);
+  transition: background-color 5000s ease-in-out 0s;
 }

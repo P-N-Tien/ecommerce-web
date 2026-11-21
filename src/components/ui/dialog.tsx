@@ -56,8 +56,14 @@ export function Dialog({ open, onOpenChange, title, description, children, class
     >
       <div className="flex items-start justify-between gap-4 border-b px-6 py-5">
         <div className="space-y-1">
-          <h2 id={titleId} className="text-lg font-semibold">{title}</h2>
-          {description ? <p id={descriptionId} className="text-sm text-muted-foreground">{description}</p> : null}
+          <h2 id={titleId} className="text-lg font-semibold">
+            {title}
+          </h2>
+          {description ? (
+            <p id={descriptionId} className="text-sm text-muted-foreground">
+              {description}
+            </p>
+          ) : null}
         </div>
         <Button
           type="button"

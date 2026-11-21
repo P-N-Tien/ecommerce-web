@@ -25,10 +25,5 @@ export function ProtectedRoute({ children, enforcePasswordChange = false }: Prot
     return <Navigate to={`/login?redirect=${encodeURIComponent(redirect)}`} replace />;
   }
 
-  if (enforcePasswordChange && session?.mustChangePassword && location.pathname !== '/change-password') {
-    const redirect = `${location.pathname}${location.search}`;
-    return <Navigate to="/change-password" state={{ redirect }} replace />;
-  }
-
   return children;
 }

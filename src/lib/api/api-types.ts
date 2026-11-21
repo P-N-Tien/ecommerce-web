@@ -4,36 +4,31 @@ export interface RetryableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
-export interface BackendErrorPayload {
-  success?: false;
-  message?: string;
-  timestamp?: string;
-  path?: string;
-
-  error?: {
-    code?: string;
-    message?: string;
-    details?: unknown;
-  };
+export interface ApiErrorDetail {
+  field: string;
+  code: string;
+  message: string;
 }
 
 export interface ApiErrorResponse {
   success: false;
   statusCode: number;
   message: string;
-
-  error: {
-    code: string;
-    message: string;
-    details?: unknown;
-  };
-
+  errors: ApiErrorDetail[];
   timestamp: string;
   path: string;
 }
 
-export interface ApiSuccessResponse<T> {
-  success: true;
+export interface PaginatedData<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
   statusCode: number;
   message: string;
   data: T;

@@ -3,10 +3,30 @@ import type { Category, CategoryInput } from '@/features/catalog/categories/type
 const STORAGE_KEY = 'ecommerce-admin.demo-categories';
 
 const initialCategories: Category[] = [
-  { id: 'cat-electronics', name: 'Electronics', slug: 'electronics', description: 'Phones, computers, and everyday technology.' },
-  { id: 'cat-home', name: 'Home & Living', slug: 'home-living', description: 'Furniture, decor, and essentials for the home.' },
-  { id: 'cat-accessories', name: 'Accessories', slug: 'accessories', description: 'Bags, watches, and personal accessories.' },
-  { id: 'cat-sports', name: 'Sports & Outdoors', slug: 'sports-outdoors', description: 'Equipment and apparel for active lifestyles.' },
+  {
+    id: 'cat-electronics',
+    name: 'Electronics',
+    slug: 'electronics',
+    description: 'Phones, computers, and everyday technology.',
+  },
+  {
+    id: 'cat-home',
+    name: 'Home & Living',
+    slug: 'home-living',
+    description: 'Furniture, decor, and essentials for the home.',
+  },
+  {
+    id: 'cat-accessories',
+    name: 'Accessories',
+    slug: 'accessories',
+    description: 'Bags, watches, and personal accessories.',
+  },
+  {
+    id: 'cat-sports',
+    name: 'Sports & Outdoors',
+    slug: 'sports-outdoors',
+    description: 'Equipment and apparel for active lifestyles.',
+  },
 ];
 
 function wait(): Promise<void> {
@@ -29,13 +49,26 @@ function writeCategories(categories: Category[]): void {
 }
 
 function slugify(value: string): string {
-  return value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
-export async function mockGetCategories(): Promise<Category[]> {
+export async function mockGetCategories(page = 1, limit = 10) {
   await wait();
   if (!window.localStorage.getItem(STORAGE_KEY)) writeCategories(initialCategories);
-  return readCategories();
+  const categories = readCategories();
+  return {
+    items: categories.slice((page - 1) * limit, page * limit),
+    total: categories.length,
+    page,
+    limit,
+    totalPages: Math.max(1, Math.ceil(categories.length / limit)),
+  };
 }
 
 export async function mockCreateCategory(input: CategoryInput): Promise<Category> {
@@ -52,7 +85,7 @@ export async function mockUpdateCategory(id: string, input: CategoryInput): Prom
   const current = categories.find((category) => category.id === id);
   if (!current) throw Object.assign(new Error('Category was not found.'), { statusCode: 404 });
   const updated = { ...current, ...input, slug: slugify(input.name) };
-  writeCategories(categories.map((category) => category.id === id ? updated : category));
+  writeCategories(categories.map((category) => (category.id === id ? updated : category)));
   return updated;
 }
 

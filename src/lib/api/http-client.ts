@@ -1,6 +1,18 @@
 import axios from 'axios';
-import type { AxiosInstance } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { API_BASE_URL } from '@/lib/api/api-base-url';
+
+export interface UnwrappedAxiosInstance
+  extends Omit<AxiosInstance, 'get' | 'post' | 'put' | 'patch' | 'delete' | 'request'> {
+  <T = any>(config: AxiosRequestConfig): Promise<T>;
+  <T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
+  request<T = any>(config: AxiosRequestConfig): Promise<T>;
+  get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
+  delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
+  post<T = any>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T>;
+  put<T = any>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T>;
+  patch<T = any>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T>;
+}
 
 const defaultConfig = {
   baseURL: API_BASE_URL,
@@ -11,8 +23,6 @@ const defaultConfig = {
   },
 };
 
-// Main API client
-export const http: AxiosInstance = axios.create(defaultConfig);
+export const http = axios.create(defaultConfig) as UnwrappedAxiosInstance;
 
-// Auth client: does not use the main API interceptors
 export const authClient: AxiosInstance = axios.create(defaultConfig);

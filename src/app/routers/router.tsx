@@ -37,7 +37,7 @@ export const router = createBrowserRouter([
       {
         path: '/',
         element: (
-          <ProtectedRoute enforcePasswordChange>
+          <ProtectedRoute>
             <AdminLayout />
           </ProtectedRoute>
         ),
@@ -47,10 +47,9 @@ export const router = createBrowserRouter([
             path: 'products',
             element: (
               <PermissionRoute permission="view_all_products">
-                <Outlet />
+                <ProductsPage />
               </PermissionRoute>
             ),
-            children: [{ index: true, handle: { title: 'Products' }, element: <ProductsPage /> }],
           },
           {
             path: 'categories',

@@ -2,12 +2,11 @@ import type { AuthSession, AuthTokensResponse, LoginCredentials } from '@/featur
 import { authClient, http } from '@/lib/api';
 import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import { USE_MOCK_API } from '@/lib/api/runtime';
-import { mockLogin, mockRefreshSession } from './mock-auth';
+import { mockLogin } from './mock-auth';
 import { clearAccessToken, setAccessToken } from '@/lib/api/auth-session';
 import { decodeAccessTokenClaims } from '@/lib/api/jwt-decode';
 import { hasPermission } from '@/app/permissions';
 import { ACCESS_ADMIN_PERMISSION } from '@/lib/api/admin-access';
-import { ApiResponse } from '@/lib/api/api-types';
 import { silentRefreshSession } from '@/lib/api/silent-refresh';
 
 export class NotOperatorError extends Error {

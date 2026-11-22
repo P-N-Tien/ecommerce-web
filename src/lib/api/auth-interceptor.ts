@@ -1,14 +1,13 @@
 import axios from 'axios';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
-
-import { http, authClient } from './http-client';
+import { http } from './http-client';
 import type { RetryableRequestConfig } from './api-types';
 import { formatApiError, normalizeAxiosError } from './error-handler';
-import { API_AUTHEN_URLS, AUTH_LOGOUT_URL, AUTH_REFRESH_URL, LOGIN_REDIRECT_URL } from '@/lib/api/api-base-url';
-import { getAccessToken } from '@/lib/api/auth-session';
+import { API_AUTHEN_URLS, AUTH_REFRESH_URL, LOGIN_REDIRECT_URL } from '@/lib/api/api-base-url';
+import { clearAccessToken, getAccessToken } from '@/lib/api/auth-session';
+import { silentRefreshAccessToken } from '@/lib/api/silent-refresh';
 
-let refreshPromise: Promise<void> | null = null;
-
+let refreshPromise: Promise<string> | null = null;
 let isRedirecting = false;
 
 const getPathname = (url: string): string => {
@@ -30,25 +29,31 @@ const isAuthEndpoint = (url?: string): boolean => {
   return API_AUTHEN_URLS.some((authUrl: string) => isSameEndpoint(url, authUrl));
 };
 
-const isAuthManagementEndpoint = (url?: string): boolean => {
-  if (!url) return false;
-  return isSameEndpoint(url, AUTH_REFRESH_URL) || isSameEndpoint(url, AUTH_LOGOUT_URL);
-};
+export function redirectToLogin(): void {
+  clearAccessToken();
 
-const handleSessionExpired = (): void => {
-  if (isRedirecting || typeof window === 'undefined') {
+  if (typeof window === 'undefined' || isRedirecting) {
     return;
   }
 
-  isRedirecting = true;
-  window.location.replace(LOGIN_REDIRECT_URL);
-};
+  const loginPath = getPathname(LOGIN_REDIRECT_URL);
+  if (getPathname(window.location.pathname) !== loginPath) {
+    isRedirecting = true;
+    const redirectTarget = `${window.location.pathname}${window.location.search}`;
+    const loginUrl = `${LOGIN_REDIRECT_URL}?redirect=${encodeURIComponent(redirectTarget)}`;
+    window.location.assign(loginUrl);
+  }
+}
 
-const refreshSession = (): Promise<void> => {
+const refreshSession = async (): Promise<string> => {
   if (!refreshPromise) {
-    refreshPromise = authClient
-      .post(AUTH_REFRESH_URL)
-      .then(() => undefined)
+    refreshPromise = silentRefreshAccessToken()
+      .then((newAccessToken) => {
+        if (!newAccessToken) {
+          throw new Error('Refresh token failed: No access token returned');
+        }
+        return newAccessToken;
+      })
       .finally(() => {
         refreshPromise = null;
       });
@@ -70,7 +75,6 @@ http.interceptors.request.use(
 
 http.interceptors.response.use(
   (response) => response.data,
-
   async (error: unknown) => {
     if (axios.isCancel(error)) {
       return Promise.reject(error);
@@ -91,36 +95,20 @@ http.interceptors.response.use(
     const status = axiosError.response.status;
     const backendError = axiosError.response.data;
 
-    if (isAuthManagementEndpoint(currentUrl)) {
-      if (isSameEndpoint(currentUrl, AUTH_REFRESH_URL) && status === 401) {
-        handleSessionExpired();
-      }
-      return Promise.reject(formatApiError(status, currentUrl, backendError));
-    }
-
-    if (isAuthEndpoint(currentUrl)) {
-      return Promise.reject(formatApiError(status, currentUrl, backendError));
-    }
-
-    if (status !== 401 || !originalRequest) {
-      return Promise.reject(formatApiError(status, currentUrl, backendError));
-    }
-
-    if (originalRequest._retry) {
-      handleSessionExpired();
+    if (isAuthEndpoint(currentUrl) || status !== 401 || !originalRequest || originalRequest._retry) {
       return Promise.reject(formatApiError(status, currentUrl, backendError));
     }
 
     originalRequest._retry = true;
 
     try {
-      await refreshSession();
+      const newAccessToken = await refreshSession();
+
+      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
       return http(originalRequest);
     } catch (refreshError: unknown) {
-      if (axios.isAxiosError(refreshError) && refreshError.response?.status === 401) {
-        handleSessionExpired();
-      }
-
+      redirectToLogin();
       return Promise.reject(normalizeAxiosError(refreshError, AUTH_REFRESH_URL));
     }
   },

@@ -87,11 +87,19 @@ export function Header({ onMenuClick }: HeaderProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="min-w-60">
             <DropdownMenuLabel className="font-normal">
-              <span className="block text-xs text-muted-foreground">Signed in as</span>
-              <span className="block truncate font-medium text-foreground">{displayName}</span>
-              {session?.roles.length ? (
-                <span className="mt-0.5 block truncate text-xs text-muted-foreground">{session.roles.join(', ')}</span>
-              ) : null}
+              <div className="flex justify-between">
+                <span className="flex size-7 mr-3 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground shadow-xs">
+                  {initials || <UserRound className="size-4" aria-hidden="true" />}
+                </span>
+                <div className="flex-1">
+                  <span className="block truncate font-medium text-foreground">{displayName}</span>
+                  {session?.roles.length ? (
+                    <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                      {session.roles.join(', ')}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

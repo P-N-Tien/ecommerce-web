@@ -6,6 +6,7 @@ import { USE_MOCK_API } from '@/lib/api/runtime';
 export type ChangePasswordInput = {
   currentPassword: string;
   newPassword: string;
+  confirmNewPassword: string;
 };
 
 export async function changePasswordRequest(input: ChangePasswordInput): Promise<void> {

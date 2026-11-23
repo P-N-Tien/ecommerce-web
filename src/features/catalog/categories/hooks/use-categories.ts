@@ -4,7 +4,7 @@ import {
   getCategories,
   updateCategory,
 } from '@/features/catalog/categories/api/categories-api';
-import { CategoryInput } from '@/features/catalog/categories/types';
+import type { CategoryInput } from '@/features/catalog/categories/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 

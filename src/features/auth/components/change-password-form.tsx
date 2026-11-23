@@ -11,7 +11,7 @@ import { changePasswordSchema, type ChangePasswordFormValues } from '@/features/
 import { navigateAfterLoginPath } from '@/features/auth/utils/navigate-after-login';
 import { hasHttpStatus } from '@/lib/api/parse-api-error';
 import { useQueryClient } from '@tanstack/react-query';
-import { AUTH_SESSION_QUERY_KEY } from '@/app/providers/auth-provider';
+import { AUTH_SESSION_QUERY_KEY } from '@/app/providers/auth-session-query-key';
 
 type LocationState = { redirect?: string } | null;
 

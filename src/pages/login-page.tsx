@@ -17,7 +17,7 @@ function LoginPage() {
         state: { redirect: searchParams.get('redirect') },
       });
     }
-  }, [status, session, searchParams]);
+  }, [status, session, searchParams, navigate]);
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-8">

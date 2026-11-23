@@ -2,7 +2,7 @@ import type { AuthSession, AuthTokensResponse, LoginCredentials } from '@/featur
 import { authClient, http } from '@/lib/api';
 import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import { USE_MOCK_API } from '@/lib/api/runtime';
-import { mockLogin } from './mock-auth';
+import { mockLogin, mockLogout } from './mock-auth';
 import { clearAccessToken, setAccessToken } from '@/lib/api/auth-session';
 import { decodeAccessTokenClaims } from '@/lib/api/jwt-decode';
 import { hasPermission } from '@/app/permissions';
@@ -103,5 +103,6 @@ export async function refreshSessionRequest(): Promise<AuthSession | null> {
 }
 
 export async function logoutRequest(): Promise<void> {
+  if (USE_MOCK_API) return mockLogout();
   await http.post(API_ENDPOINTS.AUTH.LOGOUT);
 }

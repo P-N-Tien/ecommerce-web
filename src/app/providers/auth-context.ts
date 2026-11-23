@@ -7,6 +7,7 @@ export type AuthContextValue = {
   session: AuthSession | null;
   sessionError: unknown;
   login: (credentials: LoginCredentials) => Promise<AuthSession>;
+  logout: () => Promise<void>;
   changePassword: (input: ChangePasswordInput) => Promise<void>;
   hasPermission: (permission?: string) => boolean;
   retrySession: () => void;

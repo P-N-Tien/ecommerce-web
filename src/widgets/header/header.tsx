@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CircleUserRound, KeyRound, LogOut, Menu, PanelsTopLeft, UserRound } from 'lucide-react';
+import { Check, ChevronDown, KeyRound, LogOut, Menu, Moon, PanelsTopLeft, Sun, UserRound } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/app/providers/auth-context';
+import { useTheme } from '@/app/providers/theme-context';
 import { USE_MOCK_API } from '@/lib/api/runtime';
+import { DropdownMenuGroup } from '@radix-ui/react-dropdown-menu';
 
 type HeaderProps = {
   onMenuClick: () => void;
@@ -20,6 +22,7 @@ type HeaderProps = {
 
 export function Header({ onMenuClick }: HeaderProps) {
   const { session, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const displayName = session?.email ?? 'Account';
@@ -68,19 +71,19 @@ export function Header({ onMenuClick }: HeaderProps) {
         ) : null}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              className="h-10 gap-2 px-2 sm:px-3"
-              aria-label="Open user profile menu"
-              disabled={isLoggingOut}
+              className="group flex cursor-pointer items-center gap-2.5 rounded-full border border-border/80 bg-background/80 py-1 pl-1 pr-3 shadow-xs transition-all hover:border-border hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+              <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground shadow-xs">
                 {initials || <UserRound className="size-4" aria-hidden="true" />}
               </span>
-              <span className="hidden max-w-44 truncate text-left sm:block">{displayName}</span>
-              <CircleUserRound className="size-4 sm:hidden" aria-hidden="true" />
-            </Button>
+              <span className="hidden max-w-44 truncate text-xs font-medium text-left sm:block">{displayName}</span>
+              <ChevronDown
+                className="size-3 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180"
+                aria-hidden="true"
+              />
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="min-w-60">
             <DropdownMenuLabel className="font-normal">
@@ -93,13 +96,27 @@ export function Header({ onMenuClick }: HeaderProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/change-password">
-                <KeyRound aria-hidden="true" />
+                <KeyRound className="size-3" aria-hidden="true" />
                 Change password
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+            <DropdownMenuGroup className="flex gap-1">
+              <DropdownMenuItem className="flex-1 justify-center px-2" onSelect={() => setTheme('light')}>
+                <Sun className="size-3" aria-hidden="true" />
+                Light
+                {theme === 'light' ? <Check className="size-3" aria-label="Selected" /> : null}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex-1 justify-center px-2" onSelect={() => setTheme('dark')}>
+                <Moon className="size-3" aria-hidden="true" />
+                Dark
+                {theme === 'dark' ? <Check className="size-3" aria-label="Selected" /> : null}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" disabled={isLoggingOut} onSelect={() => void handleLogout()}>
-              <LogOut aria-hidden="true" />
+              <LogOut className="size-3" aria-hidden="true" />
               {isLoggingOut ? 'Logging out…' : 'Logout'}
             </DropdownMenuItem>
           </DropdownMenuContent>

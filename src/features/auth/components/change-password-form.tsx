@@ -12,6 +12,7 @@ import { navigateAfterLoginPath } from '@/features/auth/utils/navigate-after-log
 import { hasHttpStatus } from '@/lib/api/parse-api-error';
 import { useQueryClient } from '@tanstack/react-query';
 import { AUTH_SESSION_QUERY_KEY } from '@/app/providers/auth-session-query-key';
+import { toast } from 'sonner';
 
 type LocationState = { redirect?: string } | null;
 
@@ -24,14 +25,17 @@ export function ChangePasswordForm() {
 
   const form = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(changePasswordSchema),
-    defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
+    defaultValues: { currentPassword: '', newPassword: '', confirmNewPassword: '' },
   });
   const isSubmitting = form.formState.isSubmitting;
 
-  async function onSubmit({ currentPassword, newPassword }: ChangePasswordFormValues) {
+  async function onSubmit({ currentPassword, newPassword, confirmNewPassword }: ChangePasswordFormValues) {
     setFormError(null);
     try {
-      await changePassword({ currentPassword, newPassword });
+      await changePassword({ currentPassword, newPassword, confirmNewPassword });
+
+      toast.success('Password updated successfully.');
+
       const session = queryClient.getQueryData<AuthSession>(AUTH_SESSION_QUERY_KEY);
       if (session) {
         const redirect = (location.state as LocationState)?.redirect ?? null;
@@ -57,7 +61,7 @@ export function ChangePasswordForm() {
           [
             ['currentPassword', 'Current password', 'current-password'],
             ['newPassword', 'New password', 'new-password'],
-            ['confirmPassword', 'Confirm new password', 'new-password'],
+            ['confirmNewPassword', 'Confirm new password', 'new-password'],
           ] as const
         ).map(([name, label, autoComplete]) => (
           <FormField

@@ -1,7 +1,24 @@
+import { useAuth } from '@/app/providers/auth-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoginForm } from '@/features/auth/components/login-form';
+import { navigateAfterLoginPath } from '@/features/auth/utils/navigate-after-login';
+import { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 
 function LoginPage() {
+  const navigate = useNavigate();
+  const { status, session } = useAuth();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      navigate(navigateAfterLoginPath(session, searchParams.get('redirect')), {
+        replace: true,
+        state: { redirect: searchParams.get('redirect') },
+      });
+    }
+  }, [status, session, searchParams, navigate]);
+
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-8">
       <Card className="w-full max-w-md">

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import CategoriesTable from '@/features/catalog/categories/components/categories-table';
-import { CategoryFormValues } from '@/features/catalog/categories/schemas/category-schema';
-import { ApiErrorDetail, ApiErrorResponse } from '@/lib/api/api-types';
+import type { CategoryFormValues } from '@/features/catalog/categories/schemas/category-schema';
+import type { ApiErrorDetail, ApiErrorResponse } from '@/lib/api/api-types';
 import { toast } from 'sonner';
-import { Category } from '@/features/catalog/categories/types';
+import type { Category } from '@/features/catalog/categories/types';
 import { useCategories } from '@/features/catalog/categories/hooks/use-categories';
 import { PageContainer, PageHeader } from '@/widgets/page-layout/page-container';
 import { Button } from '@/components/ui/button';
@@ -47,7 +47,9 @@ export function CategoriesView() {
         setPage(page - 1);
       }
       setDeleteTarget(null);
-    } catch {}
+    } catch {
+      // The mutation error remains in React Query and is displayed in the confirmation dialog.
+    }
   }
 
   return (
@@ -125,16 +127,12 @@ export function CategoriesView() {
         isError={query.isError}
         error={query.error}
         onRetry={() => void query.refetch()}
-        onCreate={() => {
-          setErrorFields(null);
-          setFormState({ status: 'create' });
-        }}
         onEdit={(category) => {
           setErrorFields(null);
           setFormState({ status: 'edit', category });
         }}
         onDelete={(category) => {
-          deleteMutation.reset(); // Áp dụng ngay bài học cũ!
+          deleteMutation.reset();
           setDeleteTarget(category);
         }}
       />

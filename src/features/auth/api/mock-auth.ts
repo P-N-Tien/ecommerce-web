@@ -43,6 +43,11 @@ export async function mockRefreshSession(): Promise<AuthSession | null> {
   return readMockSession();
 }
 
+export async function mockLogout(): Promise<void> {
+  await delay();
+  window.localStorage.removeItem(SESSION_KEY);
+}
+
 export async function mockChangePassword(currentPassword: string, newPassword: string): Promise<void> {
   await delay();
   const storedPassword = window.localStorage.getItem(PASSWORD_KEY) ?? DEMO_PASSWORD;

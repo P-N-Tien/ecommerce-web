@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy } from 'react';
-import { createBrowserRouter, Outlet } from 'react-router';
+import { createBrowserRouter } from 'react-router';
 import { AdminLayout } from '@/widgets/admin-layout';
 import { ProtectedRoute } from '@/app/routers/protected-route';
 import { PermissionRoute } from '@/app/routers/permission-route';

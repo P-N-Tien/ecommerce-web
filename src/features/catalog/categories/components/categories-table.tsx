@@ -17,7 +17,6 @@ type CategoriesTableProps = {
   isError: boolean;
   error: unknown;
   onRetry: () => void;
-  onCreate: () => void;
   onEdit: (category: Category) => void;
   onDelete: (category: Category) => void;
 };
@@ -33,7 +32,6 @@ export function CategoriesTable({
   isError,
   error,
   onRetry,
-  onCreate,
   onEdit,
   onDelete,
 }: CategoriesTableProps) {

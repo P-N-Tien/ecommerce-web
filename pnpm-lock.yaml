@@ -44,9 +44,6 @@ importers:
       oxc-transform-react:
         specifier: ^0.156.0
         version: 0.156.0
-      postcss:
-        specifier: ^8.5.33
-        version: 8.5.33
       react:
         specifier: ^19.3.1
         version: 19.3.1

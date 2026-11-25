@@ -1,16 +1,12 @@
 import { useMemo } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { RecordEditorDialog, type EditorField } from '@/widgets/record-editor-dialog';
 import type { Category } from '@/features/catalog/categories/types';
-import { createProduct, deleteProduct, updateProduct } from '@/features/catalog/products/api/products-api';
+import { useProductMutations } from '@/features/catalog/products/hooks/use-product-mutations';
 import type { Product, ProductInput } from '@/features/catalog/products/types';
 import { getErrorMessage } from '@/lib/api/parse-api-error';
-import { toast } from 'sonner';
-
-const PRODUCTS_KEY = ['catalog', 'products'] as const;
 
 type ProductFormModalProps = {
   open: boolean;
@@ -21,7 +17,7 @@ type ProductFormModalProps = {
 };
 
 export function ProductFormModal({ open, mode, product = null, categories, onOpenChange }: ProductFormModalProps) {
-  const queryClient = useQueryClient();
+  const { saveMutation, deleteMutation } = useProductMutations();
   const fields = useMemo<EditorField[]>(
     () => [
       { name: 'name', label: 'Name', required: true },
@@ -40,23 +36,6 @@ export function ProductFormModal({ open, mode, product = null, categories, onOpe
     ],
     [categories],
   );
-  const saveMutation = useMutation({
-    mutationFn: (input: ProductInput) =>
-      mode === 'edit' && product ? updateProduct(product.id, input) : createProduct(input),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: PRODUCTS_KEY });
-      toast.success(mode === 'edit' ? 'Product updated.' : 'Product created.');
-      onOpenChange(false);
-    },
-  });
-  const deleteMutation = useMutation({
-    mutationFn: () => deleteProduct(product!.id),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: PRODUCTS_KEY });
-      toast.success('Product deleted.');
-      onOpenChange(false);
-    },
-  });
   const error = saveMutation.error ?? deleteMutation.error;
   const errorMessage = error
     ? getErrorMessage(error, mode === 'delete' ? 'Could not delete product.' : 'Could not save product.')
@@ -72,7 +51,10 @@ export function ProductFormModal({ open, mode, product = null, categories, onOpe
       categoryId: String(values.categoryId ?? '').trim() || null,
       imageUrl: String(values.imageUrl ?? '').trim() || null,
     };
-    await saveMutation.mutateAsync(input);
+    saveMutation.mutate(
+      { id: mode === 'edit' ? product?.id : undefined, values: input },
+      { onSuccess: () => onOpenChange(false) },
+    );
   }
 
   if (mode === 'delete') {
@@ -97,7 +79,9 @@ export function ProductFormModal({ open, mode, product = null, categories, onOpe
             <Button
               variant="destructive"
               disabled={deleteMutation.isPending || !product}
-              onClick={() => deleteMutation.mutate()}
+              onClick={() => {
+                if (product) deleteMutation.mutate(product.id, { onSuccess: () => onOpenChange(false) });
+              }}
             >
               {deleteMutation.isPending ? 'Deleting…' : 'Delete product'}
             </Button>

@@ -1,51 +1,34 @@
-import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { Plus } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { getCategories } from '@/features/catalog/categories/api/categories-api';
-import type { Category } from '@/features/catalog/categories/types';
-import { getProducts, setProductActive } from '@/features/catalog/products/api/products-api';
+import { useCategories } from '@/features/catalog/categories/hooks/use-categories';
+import { useProductMutations, useProducts } from '@/features/catalog/products/hooks/use-product-mutations';
 import { ProductFormModal } from '@/features/catalog/products/components/product-form-modal';
 import { ProductTable } from '@/features/catalog/products/components/product-table';
 import { ProductFilter } from '@/features/catalog/products/components/product-filter';
-import type { Product, ProductFilters } from '@/features/catalog/products/types';
-import { getErrorMessage } from '@/lib/api/parse-api-error';
+import type { Product } from '@/features/catalog/products/types';
 import { PageContainer, PageHeader } from '@/widgets/page-layout/page-container';
-import { toast } from 'sonner';
 import { useAuth } from '@/app/providers/auth-context';
+import {
+  productListFiltersFromSearchParams,
+  productListFiltersToSearchParams,
+} from '@/features/catalog/products/lib/product-list-filters';
 
-const PRODUCTS_KEY = ['catalog', 'products'] as const;
-const CATEGORIES_KEY = ['catalog', 'categories'] as const;
-const DEFAULT_PAGE_SIZE = 10;
-const NO_CATEGORIES: Category[] = [];
 type ProductModalState = { mode: 'create' | 'edit' | 'delete'; product: Product | null };
 
 export function ProductsView() {
-  const queryClient = useQueryClient();
   const { hasPermission } = useAuth();
+  const { activeMutation } = useProductMutations();
   const canManage = hasPermission('manage_products');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-  const [filters, setFilters] = useState<ProductFilters>({});
-  const productsQuery = useQuery({
-    queryKey: [...PRODUCTS_KEY, page, pageSize, filters],
-    queryFn: () => getProducts(page, pageSize, filters),
-  });
-  const categoriesQuery = useQuery({ queryKey: CATEGORIES_KEY, queryFn: () => getCategories(1, 100) });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filters = useMemo(() => productListFiltersFromSearchParams(searchParams), [searchParams]);
+  const productsQuery = useProducts(filters.page, filters.limit, filters);
+  const { query: categoriesQuery } = useCategories(1, 100);
   const [modal, setModal] = useState<ProductModalState | null>(null);
 
-  const activeMutation = useMutation({
-    mutationFn: ({ id, active }: { id: Product['id']; active: boolean }) => setProductActive(id, active),
-    onSuccess: async (_result, variables) => {
-      await queryClient.invalidateQueries({ queryKey: PRODUCTS_KEY });
-      toast.success(variables.active ? 'Product activated.' : 'Product deactivated.');
-    },
-    onError: (error) => toast.error(getErrorMessage(error, 'Could not change product status.')),
-  });
-
-  const categories = categoriesQuery.data?.items ?? NO_CATEGORIES;
+  const categories = categoriesQuery.data?.items ?? [];
 
   return (
     <PageContainer>
@@ -60,7 +43,7 @@ export function ProductsView() {
                 setModal({ mode: 'create', product: null });
               }}
             >
-              <Plus aria-hidden="true" /> Add
+              <Plus aria-hidden="true" /> New Product
             </Button>
           ) : undefined
         }
@@ -79,45 +62,42 @@ export function ProductsView() {
         />
       ) : null}
       <ProductFilter
+        key={searchParams.toString()}
         categories={categories}
-        onApply={(nextFilters) => {
-          setFilters(nextFilters);
-          setPage(1);
-        }}
+        filters={filters}
+        onApply={(nextFilters) =>
+          setSearchParams(productListFiltersToSearchParams({ ...filters, ...nextFilters, page: 1 }))
+        }
+        onClear={() =>
+          setSearchParams(
+            productListFiltersToSearchParams({
+              page: 1,
+              limit: filters.limit,
+              sortBy: filters.sortBy,
+              sortOrder: filters.sortOrder,
+            }),
+          )
+        }
       />
       <Card>
         <CardContent className="p-0">
-          {productsQuery.isPending ? (
-            <p className="p-8 text-center text-sm text-muted-foreground">Loading products…</p>
-          ) : productsQuery.isError ? (
-            <div className="p-6">
-              <Alert variant="destructive">
-                <AlertTitle>Could not load products</AlertTitle>
-                <AlertDescription>
-                  <Button variant="outline" size="sm" onClick={() => void productsQuery.refetch()}>
-                    Try again
-                  </Button>
-                </AlertDescription>
-              </Alert>
-            </div>
-          ) : (
-            <ProductTable
-              products={productsQuery.data.items}
-              page={page}
-              pageSize={pageSize}
-              total={productsQuery.data.total}
-              onPageChange={setPage}
-              onPageSizeChange={(size) => {
-                setPageSize(size);
-                setPage(1);
-              }}
-              categories={categories}
-              canManage={canManage}
-              onEdit={(product) => setModal({ mode: 'edit', product })}
-              onDelete={(product) => setModal({ mode: 'delete', product })}
-              onToggleActive={(product) => activeMutation.mutate({ id: product.id, active: !product.isActive })}
-            />
-          )}
+          <ProductTable
+            products={productsQuery?.data?.items ?? []}
+            page={filters.page}
+            pageSize={filters.limit}
+            total={productsQuery?.data?.total || 0}
+            onPageChange={(nextPage) =>
+              setSearchParams(productListFiltersToSearchParams({ ...filters, page: nextPage }))
+            }
+            onPageSizeChange={(limit) =>
+              setSearchParams(productListFiltersToSearchParams({ ...filters, limit, page: 1 }))
+            }
+            categories={categories}
+            canManage={canManage}
+            onEdit={(product) => setModal({ mode: 'edit', product })}
+            onDelete={(product) => setModal({ mode: 'delete', product })}
+            onToggleActive={(product) => activeMutation.mutate({ id: product.id, active: !product.isActive })}
+          />
         </CardContent>
       </Card>
     </PageContainer>

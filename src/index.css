@@ -1,8 +1,5 @@
 @import 'tailwindcss';
 
-/* Thay thế cho darkMode: ['class'] ở v3 */
-@custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -51,7 +48,7 @@
   --color-tint-5: var(--tint-5);
   --color-tint-5-foreground: var(--tint-5-foreground);
 
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);

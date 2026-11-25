@@ -23,3 +23,27 @@ export type ProductFilters = {
   minPrice?: number;
   maxPrice?: number;
 };
+
+export type ListProductsQuery = {
+  page?: number;
+  limit?: number;
+  categoryId?: string;
+  search?: string;
+  isActive?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: 'createdAt' | 'price' | 'name' | 'id';
+  sortOrder?: 'asc' | 'desc';
+};
+
+export type ProductListFilters = {
+  page: number;
+  limit: number;
+  sortBy: NonNullable<ListProductsQuery['sortBy']>;
+  sortOrder: NonNullable<ListProductsQuery['sortOrder']>;
+  search?: string;
+  isActive?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  categoryId?: string;
+};

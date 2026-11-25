@@ -3,9 +3,42 @@ import { makeMockId, mockDelay, mockNotFound, readMockList, writeMockList } from
 
 const KEY = 'ecommerce-admin.demo-products';
 const seed: Product[] = [
-  { id: 'product-101', name: 'Wireless Headphones', slug: 'wireless-headphones', sku: 'ELEC-ANC-001', price: 129.99, currency: 'USD', categoryId: 'cat-electronics', categoryName: 'Electronics', imageUrl: null, isActive: true },
-  { id: 'product-102', name: 'Everyday Backpack', slug: 'everyday-backpack', sku: 'ACC-BAG-014', price: 68, currency: 'USD', categoryId: 'cat-accessories', categoryName: 'Accessories', imageUrl: null, isActive: true },
-  { id: 'product-103', name: 'Desk Lamp', slug: 'desk-lamp', sku: 'HOME-LIGHT-009', price: 42.5, currency: 'USD', categoryId: 'cat-home', categoryName: 'Home & Living', imageUrl: null, isActive: false },
+  {
+    id: 'product-101',
+    name: 'Wireless Headphones',
+    slug: 'wireless-headphones',
+    sku: 'ELEC-ANC-001',
+    price: 129.99,
+    currency: 'USD',
+    categoryId: 'cat-electronics',
+    categoryName: 'Electronics',
+    imageUrl: null,
+    isActive: true,
+  },
+  {
+    id: 'product-102',
+    name: 'Everyday Backpack',
+    slug: 'everyday-backpack',
+    sku: 'ACC-BAG-014',
+    price: 68,
+    currency: 'USD',
+    categoryId: 'cat-accessories',
+    categoryName: 'Accessories',
+    imageUrl: null,
+    isActive: true,
+  },
+  {
+    id: 'product-103',
+    name: 'Desk Lamp',
+    slug: 'desk-lamp',
+    sku: 'HOME-LIGHT-009',
+    price: 42.5,
+    currency: 'USD',
+    categoryId: 'cat-home',
+    categoryName: 'Home & Living',
+    imageUrl: null,
+    isActive: false,
+  },
 ];
 
 const read = () => readMockList(KEY, seed);
@@ -13,7 +46,8 @@ export async function mockGetProducts(page = 1, limit = 10, filters: ProductFilt
   await mockDelay();
   const search = filters.search?.trim().toLowerCase();
   const products = read().filter((product) => {
-    const matchesSearch = !search || [product.name, product.slug, product.sku].some((value) => value.toLowerCase().includes(search));
+    const matchesSearch =
+      !search || [product.name, product.slug, product.sku].some((value) => value.toLowerCase().includes(search));
     const matchesCategory = !filters.categoryId || product.categoryId === filters.categoryId;
     const matchesStatus = filters.isActive === undefined || product.isActive === filters.isActive;
     const matchesMinPrice = filters.minPrice === undefined || product.price >= filters.minPrice;
@@ -44,18 +78,27 @@ export async function mockUpdateProduct(id: string | number, input: Partial<Prod
     ...input,
     ...(input.categoryId !== undefined ? { category: null, categoryName: null } : {}),
   };
-  writeMockList(KEY, products.map((product) => String(product.id) === String(id) ? updated : product));
+  writeMockList(
+    KEY,
+    products.map((product) => (String(product.id) === String(id) ? updated : product)),
+  );
   return updated;
 }
 export async function mockDeleteProduct(id: string | number) {
   await mockDelay();
   const products = read();
   if (!products.some((product) => String(product.id) === String(id))) throw mockNotFound('Product');
-  writeMockList(KEY, products.filter((product) => String(product.id) !== String(id)));
+  writeMockList(
+    KEY,
+    products.filter((product) => String(product.id) !== String(id)),
+  );
 }
 export async function mockSetProductActive(id: string | number, isActive: boolean) {
   await mockDelay();
   const products = read();
   if (!products.some((product) => String(product.id) === String(id))) throw mockNotFound('Product');
-  writeMockList(KEY, products.map((product) => String(product.id) === String(id) ? { ...product, isActive } : product));
+  writeMockList(
+    KEY,
+    products.map((product) => (String(product.id) === String(id) ? { ...product, isActive } : product)),
+  );
 }

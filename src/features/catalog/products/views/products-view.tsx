@@ -65,9 +65,10 @@ export function ProductsView() {
         key={searchParams.toString()}
         categories={categories}
         filters={filters}
-        onApply={(nextFilters) =>
-          setSearchParams(productListFiltersToSearchParams({ ...filters, ...nextFilters, page: 1 }))
-        }
+        onApply={(nextFilters) => {
+          console.log('nextFilters', nextFilters);
+          setSearchParams(productListFiltersToSearchParams({ ...filters, ...nextFilters, page: 1 }));
+        }}
         onClear={() =>
           setSearchParams(
             productListFiltersToSearchParams({

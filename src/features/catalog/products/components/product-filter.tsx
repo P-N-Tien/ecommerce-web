@@ -39,8 +39,8 @@ export function ProductFilter({ categories, filters, onApply, onClear }: Product
 
   const activeFilters = [
     ...(appliedValues.search.trim() ? [{ key: 'search', label: `Search: ${appliedValues.search.trim()}` }] : []),
-    ...(appliedValues.minPrice ? [{ key: 'price', label: `Min: ${appliedValues.minPrice || '0'}` }] : []),
-    ...(appliedValues.maxPrice ? [{ key: 'price', label: `Max: ${appliedValues.maxPrice || '0'}` }] : []),
+    ...(appliedValues.minPrice ? [{ key: 'min', label: `Min: ${appliedValues.minPrice || '0'}` }] : []),
+    ...(appliedValues.maxPrice ? [{ key: 'max', label: `Max: ${appliedValues.maxPrice || '0'}` }] : []),
     ...(appliedValues.status
       ? [{ key: 'status', label: `Status: ${appliedValues.status === 'active' ? 'Active' : 'Inactive'}` }]
       : []),
@@ -59,11 +59,11 @@ export function ProductFilter({ categories, filters, onApply, onClear }: Product
 
   function toFilters(nextValues: FilterValues, includeSearch: boolean): ProductFilters {
     return {
-      ...(includeSearch && nextValues.search.trim() ? { search: nextValues.search.trim() } : {}),
-      ...(nextValues.categoryId ? { categoryId: nextValues.categoryId } : {}),
-      ...(nextValues.status ? { isActive: nextValues.status === 'active' } : {}),
-      ...(nextValues.minPrice !== '' ? { minPrice: Number(nextValues.minPrice) } : {}),
-      ...(nextValues.maxPrice !== '' ? { maxPrice: Number(nextValues.maxPrice) } : {}),
+      ...(includeSearch && { search: nextValues.search.trim() || undefined }),
+      categoryId: nextValues.categoryId || undefined,
+      isActive: nextValues.status ? nextValues.status === 'active' : undefined,
+      minPrice: nextValues.minPrice !== '' ? Number(nextValues.minPrice) : undefined,
+      maxPrice: nextValues.maxPrice !== '' ? Number(nextValues.maxPrice) : undefined,
     };
   }
 
@@ -260,9 +260,9 @@ export function ProductFilter({ categories, filters, onApply, onClear }: Product
         </div>
       ) : null}
 
-      {activeFilters.length > 0 ? (
+      {!!activeFilters.length ? (
         <div aria-label="Active filters" className="flex flex-wrap items-center gap-2 p-3">
-          <span className="mr-1 text-sm font-normal">Active: </span>
+          <span className="mr-1 text-sm text-muted-foreground">Active: </span>
           {activeFilters.map((filter) => (
             <button
               key={filter.key}

@@ -61,6 +61,7 @@ export function productListFiltersFromSearchParams(params: URLSearchParams): Pro
 
 export function productListFiltersToSearchParams(filters: ProductListFilters): URLSearchParams {
   const normalized = normalizeProductListFilters(filters);
+  console.log('normalized', normalized);
   const params = new URLSearchParams();
 
   if (normalized.page !== DEFAULT_PRODUCT_LIST_FILTERS.page) {

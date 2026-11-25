@@ -9,7 +9,8 @@ import type { Category } from '@/features/catalog/categories/types';
 import { getProducts, setProductActive } from '@/features/catalog/products/api/products-api';
 import { ProductFormModal } from '@/features/catalog/products/components/product-form-modal';
 import { ProductTable } from '@/features/catalog/products/components/product-table';
-import type { Product } from '@/features/catalog/products/types';
+import { ProductFilter } from '@/features/catalog/products/components/product-filter';
+import type { Product, ProductFilters } from '@/features/catalog/products/types';
 import { getErrorMessage } from '@/lib/api/parse-api-error';
 import { PageContainer, PageHeader } from '@/widgets/page-layout/page-container';
 import { toast } from 'sonner';
@@ -27,9 +28,10 @@ export function ProductsView() {
   const canManage = hasPermission('manage_products');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [filters, setFilters] = useState<ProductFilters>({});
   const productsQuery = useQuery({
-    queryKey: [...PRODUCTS_KEY, page, pageSize],
-    queryFn: () => getProducts(page, pageSize),
+    queryKey: [...PRODUCTS_KEY, page, pageSize, filters],
+    queryFn: () => getProducts(page, pageSize, filters),
   });
   const categoriesQuery = useQuery({ queryKey: CATEGORIES_KEY, queryFn: () => getCategories(1, 100) });
   const [modal, setModal] = useState<ProductModalState | null>(null);
@@ -50,7 +52,7 @@ export function ProductsView() {
       <PageHeader
         section="Catalog"
         title="Products"
-        description="Manage the products available in your store."
+        description="Browse the catalog and manage product details."
         action={
           canManage ? (
             <Button
@@ -76,7 +78,13 @@ export function ProductsView() {
           }}
         />
       ) : null}
-
+      <ProductFilter
+        categories={categories}
+        onApply={(nextFilters) => {
+          setFilters(nextFilters);
+          setPage(1);
+        }}
+      />
       <Card>
         <CardContent className="p-0">
           {productsQuery.isPending ? (

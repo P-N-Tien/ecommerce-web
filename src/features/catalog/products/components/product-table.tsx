@@ -38,9 +38,14 @@ export function ProductTable({
       id: 'product',
       header: 'Product',
       cell: (product) => (
-        <div>
-          <p className="font-medium">{product.name}</p>
-          <p className="text-xs text-muted-foreground">{product.sku}</p>
+        <div className="flex items-center gap-3">
+          {product.imageUrl ? (
+            <img src={product.imageUrl} alt="" className="size-10 rounded-md border object-cover" />
+          ) : <div aria-hidden="true" className="size-10 rounded-md bg-muted" />}
+          <div>
+            <p className="font-medium">{product.name}</p>
+            <p className="text-xs text-muted-foreground">{product.sku} · {product.slug}</p>
+          </div>
         </div>
       ),
       headerClassName: 'px-5',
@@ -58,6 +63,7 @@ export function ProductTable({
       id: 'category',
       header: 'Category',
       cell: (product) =>
+        product.category?.name ??
         product.categoryName ??
         categories.find((category) => String(category.id) === String(product.categoryId))?.name ??
         '—',

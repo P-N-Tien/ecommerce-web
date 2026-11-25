@@ -15,29 +15,34 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const visibleNavigation = navigation.filter(
     (item) => !item.permission || session?.permissions.includes(item.permission),
   );
+
   return (
     <>
-      {isOpen ? (
-        <button
-          type="button"
-          aria-label="Close navigation menu"
-          className="fixed inset-0 top-16 z-30 bg-black/40 md:hidden"
-          onClick={onClose}
-        />
-      ) : null}
+      <button
+        type="button"
+        aria-label="Close navigation menu"
+        onClick={onClose}
+        className={cn(
+          'fixed inset-0 top-16 z-30 bg-black/10 backdrop-blur-xs transition-opacity duration-300 lg:hidden',
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
+        )}
+      />
+
       <aside
         aria-label="Main navigation"
         className={cn(
-          'fixed inset-y-16 left-0 z-40 w-64 border-r bg-card p-3 transition-transform md:sticky md:top-16 md:z-0 md:block md:h-[calc(100vh-4rem)] md:translate-x-0',
+          'fixed inset-y-16 left-0 z-40 w-64 border-r bg-card p-3 transition-transform duration-500 ease-out',
+          'lg:sticky lg:top-16 lg:block lg:h-[calc(100vh-4rem)] lg:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
-        <div className="mb-3 flex items-center justify-between px-3 py-2 md:hidden">
+        <div className="mb-3 flex items-center justify-between px-3 py-2 lg:hidden">
           <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Menu</span>
           <Button type="button" variant="ghost" size="icon" onClick={onClose} aria-label="Close navigation menu">
             <X aria-hidden="true" />
           </Button>
         </div>
+
         <nav className="space-y-1" aria-label="Admin sections">
           {visibleNavigation.map(({ to, label, icon: Icon }) => (
             <NavLink

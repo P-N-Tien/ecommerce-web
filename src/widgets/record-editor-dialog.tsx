@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 export type EditorField = {
   name: string;
   label: string;
-  type?: 'text' | 'email' | 'number' | 'textarea' | 'select';
+  type?: 'text' | 'email' | 'url' | 'number' | 'textarea' | 'select';
   required?: boolean;
   min?: number;
   step?: number;
@@ -80,7 +80,7 @@ export function RecordEditorDialog({
                   disabled={isSaving}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
                 >
-                  <option value="">Select {field.label.toLowerCase()}</option>
+                  <option value="">{field.placeholder ?? `Select ${field.label.toLowerCase()}`}</option>
                   {field.options?.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}

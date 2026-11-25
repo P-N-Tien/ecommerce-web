@@ -8,10 +8,10 @@ export function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onMenuClick={() => setIsSidebarOpen(true)} />
+      <Header onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
       <div className="flex">
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-        <div className="min-w-0 flex-1">
+        <div className="flex-1">
           <Outlet />
         </div>
       </div>

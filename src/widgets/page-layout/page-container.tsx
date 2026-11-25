@@ -13,7 +13,7 @@ interface PageHeaderProps {
 }
 
 export function PageContainer({ children, className = '' }: PageContainerProps) {
-  return <main className={`mx-auto w-full max-w-6xl space-y-6 px-6 py-10 ${className}`}>{children}</main>;
+  return <main className={`w-full space-y-8 px-8 py-8 ${className}`}>{children}</main>;
 }
 
 export function PageHeader({ section, title, description, action }: PageHeaderProps) {

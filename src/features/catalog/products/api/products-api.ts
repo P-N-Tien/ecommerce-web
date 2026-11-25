@@ -1,6 +1,6 @@
 import { http } from '@/lib/api';
 import { USE_MOCK_API } from '@/lib/api/runtime';
-import type { Product, ProductInput } from '@/features/catalog/products/types';
+import type { Product, ProductFilters, ProductInput } from '@/features/catalog/products/types';
 import {
   mockCreateProduct,
   mockDeleteProduct,
@@ -11,10 +11,10 @@ import {
 import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import type { ApiResponse, PaginatedData } from '@/lib/api/api-types';
 
-export async function getProducts(page = 1, limit = 10): Promise<PaginatedData<Product>> {
-  if (USE_MOCK_API) return mockGetProducts(page, limit);
+export async function getProducts(page = 1, limit = 10, filters: ProductFilters = {}): Promise<PaginatedData<Product>> {
+  if (USE_MOCK_API) return mockGetProducts(page, limit, filters);
   const res = await http.get<ApiResponse<PaginatedData<Product>>>(API_ENDPOINTS.PRODUCTS.BASE, {
-    params: { page, limit },
+    params: { page, limit, ...filters },
   });
   return res.data;
 }
@@ -23,7 +23,6 @@ export async function createProduct(input: ProductInput): Promise<Product> {
   if (USE_MOCK_API) return mockCreateProduct(input);
   const res = await http.post<Product>(API_ENDPOINTS.PRODUCTS.BASE, {
     ...input,
-    categoryId: Number(input.categoryId),
   });
   return res;
 }
@@ -32,7 +31,6 @@ export async function updateProduct(id: string | number, input: Partial<ProductI
   if (USE_MOCK_API) return mockUpdateProduct(id, input);
   const res = await http.patch<Product>(API_ENDPOINTS.PRODUCTS.DETAIL(id), {
     ...input,
-    ...(input.categoryId ? { categoryId: Number(input.categoryId) } : {}),
   });
   return res;
 }

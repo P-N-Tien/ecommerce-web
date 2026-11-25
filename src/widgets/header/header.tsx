@@ -49,18 +49,20 @@ export function Header({ onMenuClick }: HeaderProps) {
           type="button"
           variant="ghost"
           size="icon"
-          className="md:hidden"
+          className="lg:hidden"
           aria-label="Open navigation menu"
           onClick={onMenuClick}
         >
           <Menu aria-hidden="true" />
         </Button>
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <PanelsTopLeft className="h-5 w-5" aria-hidden="true" />
-        </div>
-        <div className="leading-tight">
-          <p className="font-semibold">Ecommerce Admin</p>
-          <p className="text-xs text-muted-foreground">Control Center</p>
+        <div className="hidden items-center gap-2 lg:flex">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <PanelsTopLeft className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div className="leading-tight">
+            <p className="font-semibold">Ecommerce Admin</p>
+            <p className="text-xs text-muted-foreground">Control Center</p>
+          </div>
         </div>
       </div>
       <div className="flex items-center gap-2">

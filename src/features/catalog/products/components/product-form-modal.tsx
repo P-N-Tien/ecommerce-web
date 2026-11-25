@@ -25,17 +25,18 @@ export function ProductFormModal({ open, mode, product = null, categories, onOpe
   const fields = useMemo<EditorField[]>(
     () => [
       { name: 'name', label: 'Name', required: true },
+      { name: 'slug', label: 'Slug', required: true },
       { name: 'sku', label: 'SKU', required: true },
       { name: 'price', label: 'Price', type: 'number', min: 0.01, step: 0.01, required: true },
       { name: 'currency', label: 'Currency', required: true },
+      { name: 'imageUrl', label: 'Image URL', type: 'url' },
       {
         name: 'categoryId',
         label: 'Category',
         type: 'select',
-        required: true,
+        placeholder: 'Uncategorized',
         options: categories.map((category) => ({ value: String(category.id), label: category.name })),
       },
-      { name: 'description', label: 'Description', type: 'textarea' },
     ],
     [categories],
   );
@@ -64,12 +65,12 @@ export function ProductFormModal({ open, mode, product = null, categories, onOpe
   async function save(values: Record<string, string | number>) {
     const input: ProductInput = {
       name: String(values.name).trim(),
+      slug: String(values.slug).trim(),
       sku: String(values.sku).trim(),
       price: Number(values.price),
       currency: String(values.currency).trim().toUpperCase(),
-      categoryId: String(values.categoryId),
-      description: String(values.description ?? '').trim(),
-      ...(product?.slug ? { slug: product.slug } : {}),
+      categoryId: String(values.categoryId ?? '').trim() || null,
+      imageUrl: String(values.imageUrl ?? '').trim() || null,
     };
     await saveMutation.mutateAsync(input);
   }
@@ -117,13 +118,14 @@ export function ProductFormModal({ open, mode, product = null, categories, onOpe
         product
           ? {
               name: product.name,
+              slug: product.slug,
               sku: product.sku,
               price: product.price,
               currency: product.currency,
-              categoryId: product.categoryId,
-              description: product.description ?? '',
+              categoryId: product.categoryId ?? '',
+              imageUrl: product.imageUrl ?? '',
             }
-          : { currency: 'USD' }
+          : { currency: 'USD', categoryId: '' }
       }
       isSaving={saveMutation.isPending}
       errorMessage={errorMessage}

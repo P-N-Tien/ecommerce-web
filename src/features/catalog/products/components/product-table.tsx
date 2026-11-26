@@ -5,6 +5,7 @@ import type { DataTableColumn } from '@/widgets/data-table';
 import type { Category } from '@/features/catalog/categories/types';
 import type { Product } from '@/features/catalog/products/types';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { formatDate } from '@/lib/format';
 
 type ProductTableProps = {
   products: Product[];
@@ -41,13 +42,22 @@ export function ProductTable({
         <div className="flex items-center gap-3">
           {product.imageUrl ? (
             <img src={product.imageUrl} alt="" className="size-10 rounded-md border object-cover" />
-          ) : <div aria-hidden="true" className="size-10 rounded-md bg-muted" />}
+          ) : (
+            <div aria-hidden="true" className="size-10 rounded-md bg-muted" />
+          )}
           <div>
             <p className="font-medium">{product.name}</p>
-            <p className="text-xs text-muted-foreground">{product.sku} · {product.slug}</p>
+            <p className="text-xs text-muted-foreground">{product.slug}</p>
           </div>
         </div>
       ),
+      headerClassName: 'px-5',
+      cellClassName: 'px-5',
+    },
+    {
+      id: 'sku',
+      header: 'Sku',
+      cell: (product) => <p className="text-xs text-muted-foreground">{product.sku}</p>,
       headerClassName: 'px-5',
       cellClassName: 'px-5',
     },
@@ -74,6 +84,13 @@ export function ProductTable({
       id: 'status',
       header: 'Status',
       cell: (product) => <StatusBadge variant="product" isActive={product.isActive} />,
+      headerClassName: 'px-5',
+      cellClassName: 'px-5',
+    },
+    {
+      id: 'createAt',
+      header: 'Created',
+      cell: (product) => formatDate(product.createdAt),
       headerClassName: 'px-5',
       cellClassName: 'px-5',
     },

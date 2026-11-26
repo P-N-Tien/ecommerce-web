@@ -1,5 +1,12 @@
-import { Pencil, Tag, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, Tag, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Card, CardContent } from '@/components/ui/card';
 import { QueryLoading, QueryStateAlert } from '@/components/feedback/query-state';
 import { DataTable } from '@/widgets/data-table';
@@ -71,19 +78,23 @@ export function CategoriesTable({
       id: 'actions',
       header: 'Actions',
       cell: (category) => (
-        <div className="flex justify-end gap-2">
-          <Button variant="ghost" size="sm" onClick={() => onEdit(category)} aria-label={`Edit ${category.name}`}>
-            <Pencil aria-hidden="true" /> Edit
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-destructive hover:text-destructive"
-            onClick={() => onDelete(category)}
-            aria-label={`Delete ${category.name}`}
-          >
-            <Trash2 aria-hidden="true" /> Delete
-          </Button>
+        <div className="flex justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label={`Actions for ${category.name}`}>
+                <MoreHorizontal aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => onEdit(category)}>
+                <Pencil aria-hidden="true" /> Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive" onSelect={() => onDelete(category)}>
+                <Trash2 aria-hidden="true" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
       headerClassName: 'px-5 text-right',

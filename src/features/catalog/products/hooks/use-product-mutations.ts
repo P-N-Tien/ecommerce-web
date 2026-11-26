@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createProduct,
   deleteProduct,
+  getProduct,
   getProducts,
   setProductActive,
   updateProduct,
@@ -11,6 +12,17 @@ import { getErrorMessage } from '@/lib/api/parse-api-error';
 import { toast } from 'sonner';
 
 const PRODUCTS_KEY = ['catalog', 'products'] as const;
+
+export function useProduct(id?: string) {
+  return useQuery({
+    queryKey: [...PRODUCTS_KEY, 'detail', id],
+    queryFn: () => {
+      if (!id) throw new Error('Product ID is required.');
+      return getProduct(id);
+    },
+    enabled: Boolean(id),
+  });
+}
 
 export function useProductMutations() {
   const queryClient = useQueryClient();

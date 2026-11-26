@@ -1,6 +1,7 @@
 export type Product = {
   id: string | number;
   name: string;
+  description?: string | null;
   slug: string;
   sku: string;
   price: number;
@@ -14,7 +15,9 @@ export type Product = {
   updatedAt?: string;
 };
 
-export type ProductInput = Pick<Product, 'name' | 'slug' | 'sku' | 'price' | 'currency' | 'imageUrl' | 'categoryId'>;
+export type ProductInput = Pick<Product, 'name' | 'slug' | 'sku' | 'price' | 'currency' | 'imageUrl' | 'categoryId'> & {
+  description?: string | null;
+};
 
 export type ProductFilters = {
   search?: string;
@@ -22,6 +25,8 @@ export type ProductFilters = {
   isActive?: boolean;
   minPrice?: number;
   maxPrice?: number;
+  sortBy?: 'createdAt' | 'price' | 'name' | 'id';
+  sortOrder?: 'asc' | 'desc';
 };
 
 export type ListProductsQuery = {

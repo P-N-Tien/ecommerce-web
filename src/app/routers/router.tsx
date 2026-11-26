@@ -12,6 +12,7 @@ const LoginPage = lazy(() => import('@/pages/login-page'));
 const ChangePasswordPage = lazy(() => import('@/pages/change-password-page'));
 const CategoriesPage = lazy(() => import('@/pages/catalog/categories-page'));
 const ProductsPage = lazy(() => import('@/pages/catalog/products-page'));
+const ProductEditorPage = lazy(() => import('@/pages/catalog/product-editor-page'));
 const InventoryPage = lazy(() => import('@/pages/inventory-page'));
 const OrdersPage = lazy(() => import('@/pages/orders-page'));
 const UsersPage = lazy(() => import('@/pages/users-page'));
@@ -48,6 +49,24 @@ export const router = createBrowserRouter([
             element: (
               <PermissionRoute permission="view_all_products">
                 <ProductsPage />
+              </PermissionRoute>
+            ),
+          },
+          {
+            path: 'products/new',
+            handle: { title: 'New product' },
+            element: (
+              <PermissionRoute permission="manage_products">
+                <ProductEditorPage />
+              </PermissionRoute>
+            ),
+          },
+          {
+            path: 'products/:id/edit',
+            handle: { title: 'Edit product' },
+            element: (
+              <PermissionRoute permission="manage_products">
+                <ProductEditorPage />
               </PermissionRoute>
             ),
           },

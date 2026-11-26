@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useCategories } from '@/features/catalog/categories/hooks/use-categories';
 import { useProductMutations, useProducts } from '@/features/catalog/products/hooks/use-product-mutations';
-import { ProductFormModal } from '@/features/catalog/products/components/product-form-modal';
+import { ProductDeleteDialog } from '@/features/catalog/products/components/product-delete-dialog';
 import { ProductTable } from '@/features/catalog/products/components/product-table';
 import { ProductFilter } from '@/features/catalog/products/components/product-filter';
 import type { Product } from '@/features/catalog/products/types';
@@ -16,9 +16,8 @@ import {
   productListFiltersToSearchParams,
 } from '@/features/catalog/products/lib/product-list-filters';
 
-type ProductModalState = { mode: 'create' | 'edit' | 'delete'; product: Product | null };
-
 export function ProductsView() {
+  const navigate = useNavigate();
   const { hasPermission } = useAuth();
   const { activeMutation } = useProductMutations();
   const canManage = hasPermission('manage_products');
@@ -26,7 +25,7 @@ export function ProductsView() {
   const filters = useMemo(() => productListFiltersFromSearchParams(searchParams), [searchParams]);
   const productsQuery = useProducts(filters.page, filters.limit, filters);
   const { query: categoriesQuery } = useCategories(1, 100);
-  const [modal, setModal] = useState<ProductModalState | null>(null);
+  const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
 
   const categories = categoriesQuery.data?.items ?? [];
 
@@ -41,7 +40,7 @@ export function ProductsView() {
             <Button
               size="sm"
               onClick={() => {
-                setModal({ mode: 'create', product: null });
+                navigate('/products/new');
               }}
             >
               <Plus aria-hidden="true" /> New Product
@@ -50,14 +49,11 @@ export function ProductsView() {
         }
       />
 
-      {modal && (
-        <ProductFormModal
-          open
-          mode={modal.mode}
-          product={modal.product}
-          categories={categories}
+      {deleteProduct && (
+        <ProductDeleteDialog
+          product={deleteProduct}
           onOpenChange={(open) => {
-            if (!open) setModal(null);
+            if (!open) setDeleteProduct(null);
           }}
         />
       )}
@@ -93,10 +89,23 @@ export function ProductsView() {
             onPageSizeChange={(limit) =>
               setSearchParams(productListFiltersToSearchParams({ ...filters, limit, page: 1 }))
             }
+            sortBy={filters.sortBy}
+            sortOrder={filters.sortOrder}
+            onSortChange={(sortBy) => {
+              const sortOrder =
+                filters.sortBy === sortBy
+                  ? filters.sortOrder === 'asc'
+                    ? 'desc'
+                    : 'asc'
+                  : sortBy === 'createdAt'
+                  ? 'desc'
+                  : 'asc';
+              setSearchParams(productListFiltersToSearchParams({ ...filters, page: 1, sortBy, sortOrder }));
+            }}
             categories={categories}
             canManage={canManage}
-            onEdit={(product) => setModal({ mode: 'edit', product })}
-            onDelete={(product) => setModal({ mode: 'delete', product })}
+            onEdit={(product) => navigate(`/products/${encodeURIComponent(String(product.id))}/edit`)}
+            onDelete={setDeleteProduct}
             onToggleActive={(product) => activeMutation.mutate({ id: product.id, active: !product.isActive })}
           />
         </CardContent>

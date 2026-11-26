@@ -116,7 +116,7 @@ export function ProductFilter({ categories, filters, onApply, onClear }: Product
         >
           <Input
             aria-label="Search products"
-            placeholder="Search name, SKU, or decription..."
+            placeholder="Search name, SKU, or description..."
             className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
             value={values.search}
             onChange={(event) => setValues({ ...values, search: event.target.value })}

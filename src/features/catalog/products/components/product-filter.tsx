@@ -164,23 +164,24 @@ export function ProductFilter({ categories, filters, onApply, onClear }: Product
             <SlidersHorizontal aria-hidden="true" />
             Filter
             {selectedFilterCount > 0 ? (
-              <span className="flex size-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+              <span className="flex size-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                 {selectedFilterCount}
               </span>
             ) : null}
             {isOpenFilter ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
           </Button>
         </div>
-        {activeFilters.length > 0 ? (
+
+        {activeFilters.length > 0 && (
           <Button size="sm" type="button" variant="ghost" onClick={clearFilters}>
             Clear filters
           </Button>
-        ) : null}
+        )}
       </div>
 
       {isOpenFilter ? (
         <div id="product-advanced-filters" className="rounded-lg border bg-card p-4 shadow-sm">
-          <div className="flex flex-wrap items-end gap-3">
+          <div className="flex flex-wrap items-end gap-2">
             <div className="space-y-2">
               <Label htmlFor="products-min-price" className="text-xs text-muted-foreground">
                 Min price
@@ -193,7 +194,7 @@ export function ProductFilter({ categories, filters, onApply, onClear }: Product
                 step="0.01"
                 placeholder="Min price"
                 value={values.minPrice}
-                className="h-8 w-28 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="h-8 w-max-32 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 onChange={(event) => setValues({ ...values, minPrice: event.target.value })}
               />
             </div>
@@ -210,7 +211,7 @@ export function ProductFilter({ categories, filters, onApply, onClear }: Product
                   step="0.01"
                   placeholder="Max price"
                   value={values.maxPrice}
-                  className="h-8 w-28 text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-8 w-max-32 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   onChange={(event) => setValues({ ...values, maxPrice: event.target.value })}
                 />
               </label>
@@ -225,7 +226,7 @@ export function ProductFilter({ categories, filters, onApply, onClear }: Product
                   <Button
                     type="button"
                     variant="outline"
-                    className="text-xs text-muted-foreground h-8 w-36 justify-between font-normal"
+                    className="text-xs text-muted-foreground h-8 w-max-32 justify-between font-normal"
                   >
                     {categories.find((category) => String(category.id) === values.categoryId)?.name ?? 'All categories'}
                     <ChevronDown aria-hidden="true" />
@@ -252,7 +253,7 @@ export function ProductFilter({ categories, filters, onApply, onClear }: Product
             </div>
 
             <div className="flex items-end">
-              <Button type="button" className="h-8 w-28 sm:w-auto" onClick={applyAdvancedFilters}>
+              <Button type="button" className="h-8 w-max-32 sm:w-auto" onClick={applyAdvancedFilters}>
                 Apply
               </Button>
             </div>
@@ -260,7 +261,7 @@ export function ProductFilter({ categories, filters, onApply, onClear }: Product
         </div>
       ) : null}
 
-      {!!activeFilters.length ? (
+      {activeFilters.length > 0 ? (
         <div aria-label="Active filters" className="flex flex-wrap items-center gap-2 p-3">
           <span className="mr-1 text-sm text-muted-foreground">Active: </span>
           {activeFilters.map((filter) => (

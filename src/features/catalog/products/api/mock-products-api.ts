@@ -10,6 +10,8 @@ const seed: Product[] = [
     sku: 'ELEC-ANC-001',
     price: 129.99,
     currency: 'USD',
+    createdAt: '2025-01-15T08:00:00.000Z',
+    updatedAt: '2025-01-15T08:00:00.000Z',
     categoryId: 'cat-electronics',
     categoryName: 'Electronics',
     imageUrl: null,
@@ -22,6 +24,8 @@ const seed: Product[] = [
     sku: 'ACC-BAG-014',
     price: 68,
     currency: 'USD',
+    createdAt: '2025-02-20T08:00:00.000Z',
+    updatedAt: '2025-02-20T08:00:00.000Z',
     categoryId: 'cat-accessories',
     categoryName: 'Accessories',
     imageUrl: null,
@@ -34,6 +38,8 @@ const seed: Product[] = [
     sku: 'HOME-LIGHT-009',
     price: 42.5,
     currency: 'USD',
+    createdAt: '2025-03-10T08:00:00.000Z',
+    updatedAt: '2025-03-10T08:00:00.000Z',
     categoryId: 'cat-home',
     categoryName: 'Home & Living',
     imageUrl: null,
@@ -42,6 +48,13 @@ const seed: Product[] = [
 ];
 
 const read = () => readMockList(KEY, seed);
+export async function mockGetProduct(id: string | number): Promise<Product> {
+  await mockDelay();
+  const product = read().find((item) => String(item.id) === String(id));
+  if (!product) throw mockNotFound('Product');
+  return product;
+}
+
 export async function mockGetProducts(page = 1, limit = 10, filters: ProductFilters = {}) {
   await mockDelay();
   const search = filters.search?.trim().toLowerCase();
@@ -54,6 +67,15 @@ export async function mockGetProducts(page = 1, limit = 10, filters: ProductFilt
     const matchesMaxPrice = filters.maxPrice === undefined || product.price <= filters.maxPrice;
     return matchesSearch && matchesCategory && matchesStatus && matchesMinPrice && matchesMaxPrice;
   });
+  const direction = filters.sortOrder === 'asc' ? 1 : -1;
+  products.sort((left, right) => {
+    if (filters.sortBy === 'price') return (left.price - right.price) * direction;
+    if (filters.sortBy === 'name') return left.name.localeCompare(right.name) * direction;
+    if (filters.sortBy === 'id') return String(left.id).localeCompare(String(right.id)) * direction;
+
+    const difference = Date.parse(left.createdAt ?? '') - Date.parse(right.createdAt ?? '');
+    return (Number.isNaN(difference) ? 0 : difference) * direction;
+  });
   return {
     items: products.slice((page - 1) * limit, page * limit),
     total: products.length,
@@ -64,7 +86,15 @@ export async function mockGetProducts(page = 1, limit = 10, filters: ProductFilt
 }
 export async function mockCreateProduct(input: ProductInput) {
   await mockDelay();
-  const product: Product = { ...input, id: makeMockId('product'), categoryName: null, isActive: true };
+  const now = new Date().toISOString();
+  const product: Product = {
+    ...input,
+    id: makeMockId('product'),
+    categoryName: null,
+    isActive: true,
+    createdAt: now,
+    updatedAt: now,
+  };
   writeMockList(KEY, [product, ...read()]);
   return product;
 }
@@ -76,6 +106,7 @@ export async function mockUpdateProduct(id: string | number, input: Partial<Prod
   const updated = {
     ...current,
     ...input,
+    updatedAt: new Date().toISOString(),
     ...(input.categoryId !== undefined ? { category: null, categoryName: null } : {}),
   };
   writeMockList(

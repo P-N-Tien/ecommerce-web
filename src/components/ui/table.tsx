@@ -5,22 +5,27 @@ import { cn } from '@/lib/utils';
 type TableProps = React.HTMLAttributes<HTMLTableElement> & {
   /** Accessible name for the horizontal scroll region on narrow viewports. */
   scrollRegionLabel?: string;
+  containerClassName?: string;
+  containerStyle?: React.CSSProperties;
 };
 
-const Table = React.forwardRef<HTMLTableElement, TableProps>(({ className, scrollRegionLabel, ...props }, ref) => (
-  <div
-    className="relative w-full overflow-x-auto"
-    {...(scrollRegionLabel
-      ? {
-          role: 'region' as const,
-          'aria-label': scrollRegionLabel,
-          tabIndex: 0,
-        }
-      : {})}
-  >
-    <table ref={ref} className={cn('w-full caption-bottom text-sm', className)} {...props} />
-  </div>
-));
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+  ({ className, scrollRegionLabel, containerClassName, containerStyle, ...props }, ref) => (
+    <div
+      className={cn('relative w-full overflow-x-auto', containerClassName)}
+      style={containerStyle}
+      {...(scrollRegionLabel
+        ? {
+            role: 'region' as const,
+            'aria-label': scrollRegionLabel,
+            tabIndex: 0,
+          }
+        : {})}
+    >
+      <table ref={ref} className={cn('w-full caption-bottom text-sm', className)} {...props} />
+    </div>
+  ),
+);
 Table.displayName = 'Table';
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(

@@ -20,8 +20,6 @@ export const API_ENDPOINTS = {
   PRODUCTS: {
     BASE: `${API_PREFIX}/products`,
     DETAIL: (productId: string | number) => `${API_PREFIX}/products/${id(productId)}`,
-    ACTIVATE: (productId: string | number) => `${API_PREFIX}/products/${id(productId)}/activate`,
-    DEACTIVATE: (productId: string | number) => `${API_PREFIX}/products/${id(productId)}/deactivate`,
   },
   INVENTORY: {
     BASE: `${API_PREFIX}/inventory`,

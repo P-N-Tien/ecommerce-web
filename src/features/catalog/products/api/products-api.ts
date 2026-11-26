@@ -4,6 +4,7 @@ import type { Product, ProductFilters, ProductInput } from '@/features/catalog/p
 import {
   mockCreateProduct,
   mockDeleteProduct,
+  mockGetProduct,
   mockGetProducts,
   mockSetProductActive,
   mockUpdateProduct,
@@ -16,6 +17,12 @@ export async function getProducts(page = 1, limit = 10, filters: ProductFilters 
   const res = await http.get<ApiResponse<PaginatedData<Product>>>(API_ENDPOINTS.PRODUCTS.BASE, {
     params: { page, limit, ...filters },
   });
+  return res.data;
+}
+
+export async function getProduct(id: string | number): Promise<Product> {
+  if (USE_MOCK_API) return mockGetProduct(id);
+  const res = await http.get<ApiResponse<Product>>(API_ENDPOINTS.PRODUCTS.DETAIL(id));
   return res.data;
 }
 
@@ -42,5 +49,5 @@ export async function deleteProduct(id: string | number): Promise<void> {
 
 export async function setProductActive(id: string | number, active: boolean): Promise<void> {
   if (USE_MOCK_API) return mockSetProductActive(id, active);
-  await http.post(active ? API_ENDPOINTS.PRODUCTS.ACTIVATE(id) : API_ENDPOINTS.PRODUCTS.DEACTIVATE(id));
+  await http.patch(API_ENDPOINTS.PRODUCTS.DETAIL(id), { isActive: active });
 }

@@ -11,19 +11,19 @@ type TableProps = React.HTMLAttributes<HTMLTableElement> & {
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
   ({ className, scrollRegionLabel, containerClassName, containerStyle, ...props }, ref) => (
-  <div
-    className={cn('relative w-full overflow-x-auto', containerClassName)}
-    style={containerStyle}
-    {...(scrollRegionLabel
-      ? {
-          role: 'region' as const,
-          'aria-label': scrollRegionLabel,
-          tabIndex: 0,
-        }
-      : {})}
-  >
-    <table ref={ref} className={cn('w-full caption-bottom text-sm', className)} {...props} />
-  </div>
+    <div
+      className={cn('relative w-full overflow-x-auto', containerClassName)}
+      style={containerStyle}
+      {...(scrollRegionLabel
+        ? {
+            role: 'region' as const,
+            'aria-label': scrollRegionLabel,
+            tabIndex: 0,
+          }
+        : {})}
+    >
+      <table ref={ref} className={cn('w-full caption-bottom text-sm', className)} {...props} />
+    </div>
   ),
 );
 Table.displayName = 'Table';

@@ -37,21 +37,21 @@ export function ProductsView() {
         title="Products"
         description="Browse the catalog and manage product details."
         action={
-          canManage ? (
+          canManage && (
             <Button
+              size="sm"
               onClick={() => {
                 setModal({ mode: 'create', product: null });
               }}
             >
               <Plus aria-hidden="true" /> New Product
             </Button>
-          ) : undefined
+          )
         }
       />
 
-      {modal ? (
+      {modal && (
         <ProductFormModal
-          key={`${modal.mode}-${modal.product?.id ?? 'new'}`}
           open
           mode={modal.mode}
           product={modal.product}
@@ -60,13 +60,13 @@ export function ProductsView() {
             if (!open) setModal(null);
           }}
         />
-      ) : null}
+      )}
+
       <ProductFilter
         key={searchParams.toString()}
         categories={categories}
         filters={filters}
         onApply={(nextFilters) => {
-          console.log('nextFilters', nextFilters);
           setSearchParams(productListFiltersToSearchParams({ ...filters, ...nextFilters, page: 1 }));
         }}
         onClear={() =>

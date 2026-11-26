@@ -60,6 +60,7 @@ export function CategoriesView() {
         description="Manage catalog categories used to classify products. Deleting a category unassigns its products."
         action={
           <Button
+            size="sm"
             onClick={() => {
               setErrorFields(null);
               setFormState({ status: 'create' });

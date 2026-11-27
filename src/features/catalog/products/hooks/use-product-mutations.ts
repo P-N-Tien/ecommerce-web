@@ -46,9 +46,8 @@ export function useProductMutations() {
 
   const activeMutation = useMutation({
     mutationFn: ({ id, active }: { id: string | number; active: boolean }) => setProductActive(id, active),
-    onSuccess: async (_result, variables) => {
+    onSuccess: async (_result) => {
       await queryClient.invalidateQueries({ queryKey: PRODUCTS_KEY });
-      toast.success(variables.active ? 'Product activated.' : 'Product deactivated.');
     },
     onError: (error) => toast.error(getErrorMessage(error, 'Could not change product status.')),
   });
